@@ -1,6 +1,9 @@
 package qrcom.PROFIT.files.dao.local.GV;
 
 import java.sql.*;
+
+import java.text.DecimalFormat;
+
 import java.util.*;
 import qrcom.PROFIT.files.dao.IF.shared.QueryBasedPagingDAOHandller;
 import qrcom.PROFIT.shared.Utility.ExecuteQuery;
@@ -229,7 +232,7 @@ public class VoucherIssuanceInquiryDAOAMY implements QueryBasedPagingDAOHandller
                 returnMap.put("REMARK", resultSet.getString("REMARK"));
             }
             
-            sql_query = " SELECT SUM(TOT_AMOUNT) AS TOT_AMOUNT, SUM(DISC_AMT) AS TOTAL_DISCOUNT_AMT " +
+            sql_query = " SELECT SUM(TOT_AMOUNT) AS TOT_AMOUNT, SUM(DISC_AMT) AS TOT_DISCOUNT_AMT " +
                         " FROM GVLOGBOOK " +
                         " WHERE COY = ? " +
                         " AND COY_SUB = ? " +
@@ -247,10 +250,19 @@ public class VoucherIssuanceInquiryDAOAMY implements QueryBasedPagingDAOHandller
             pstmt.setString(6, (String)hPrm.get("STORE"));
             resultSet = pstmt.executeQuery();
             
-            if(resultSet.next())
-            {
-                returnMap.put("TOT_AMOUNT", resultSet.getString("TOT_AMOUNT"));
-                returnMap.put("TOTAL_DISCOUNT", resultSet.getString("TOTAL_DISCOUNT_AMT"));
+            if (resultSet.next()) {
+                final String strTotalAmount = resultSet.getString("TOT_AMOUNT");
+                final String strTotalDiscount = resultSet.getString("TOT_DISCOUNT_AMT");
+                returnMap.put("TOT_AMOUNT", strTotalAmount);
+                returnMap.put("TOT_DISCOUNT", strTotalDiscount);
+                try {
+                    double totalAmountAfterDiscount =
+                        Double.parseDouble(strTotalAmount) - Double.parseDouble(strTotalDiscount);
+                    returnMap.put("TOT_AMOUNT_AFT_DISCOUNT", new DecimalFormat("#0.00").format(totalAmountAfterDiscount));
+                } catch (Exception e) {
+                    returnMap.put("TOT_AMOUNT_AFT_DISCOUNT", strTotalAmount);
+                    e.printStackTrace();
+                }
             }
         }
         catch (Exception e)
