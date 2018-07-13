@@ -246,30 +246,22 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
     private String COPY_2                   = "(Customer Copy)";
 
     private String strHEADOFFICE            = "HEAD OFFICE";
+    
+    private String strCoyName               = "";
 
-    private String strADDRESS_1             = "3rd Floor, AEON Taman Maluri Shopping Centre";
+    private String strADDRESS_1             = "";
 
-    private String strADDRESS_2             = "Jalan Jejaka, Taman Maluri";
+    private String strADDRESS_2             = "";
 
-    private String strADDRESS_3             = "Cheras, 55100 Kuala Lumpur";
+    private String strADDRESS_3             = "";
 
-    private String strADDRESS_4             = "Tel.: 03-9207 2005   Fax.:03-9207 2006/2007";
+    private String strADDRESS_4             = "";
 
-    private String strFOOTER_1              = "I hereby acknowledge that I have verified and collected all the " +
+    private String strFOOTER_1              = "";
+    
+    private String strReceiptName           = "";
 
-                                              "Gift Voucher(s) as above mentioned. I also confirmed that all " +
-
-                                              "Gift Voucher(s) are in good order and condition. The Purchaser and I " +
-
-                                              "hereby release, indemnify and hold harmless AEON CO.(M) BHD from " +
-
-                                              "any claims, demands, liability and caused of action of whatsoever " +
-
-                                              "kind and nature in regards to the above Gift Voucher(s) in future.";
-
-    private String strFOOTER_3              = "* IF PAYMENT IS MADE BY CHEQUE, THIS RECEIPT IS ONLY VALID " +
-
-                                              "UPON CLEARANCE OF THE SAME.";
+    private String strFOOTER_3              = "";
 
     private String strNAME_COLLECTOR        = "Name of Collector";
 
@@ -407,7 +399,9 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
         
         SysIssueSelRefRsnCd = getPROFITVV(COY, "SysIssueSelRefRsnCd");
         SYSGVSelRefGVTYPE = getPROFITVV(COY, "SYSGVSelRefGVTYPE");
-
+        
+        strFOOTER_1 = getPROFITVV(COY, "SYSGvAckPrintType1");
+        strFOOTER_3 = getPROFITVV(COY, "SYSGvFootPrintType1");
     }
 
     
@@ -467,6 +461,12 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
                     gvType = hParam.getString("GV_TYPE_" + String.valueOf(i)).trim();
 
                     String prcType = hParam.getString("PRC_TYPE_" + String.valueOf(i)).trim();
+
+                    if (this.isFoundInStr(SYSGVSelRefGVTYPE, gvType) && this.isFoundInStr(SysIssueSelRefRsnCd, rsnCd)) {
+                        strReceiptName = "COLLECTION OF VOUCHER (S)";
+                    } else {
+                        strReceiptName = "COLLECTION OF GIFT VOUCHER (S)";
+                    }
 
                     reprint = hParam.getString("REPRINT");
 
@@ -736,7 +736,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         SYSMbrCardTyp       = getPROFITVV(COY, "SYSMbrCardTyp"); //Added on 20160331 get member card type
 
-        
+        getCompanyInfo();
 
         BASE_FONT_Chinese           = BaseFont.createFont(SYSRptFontTaxInv, SYSRptFontEncode2, BaseFont.NOT_EMBEDDED);
 
@@ -2044,25 +2044,13 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
     }
 
-    
-
-    private void prepareRecordReceiptType_1(HParam hParam, int i) throws Exception
-
-    {
-
+    private void prepareRecordReceiptType_1(HParam hParam, int i) throws Exception {
         getHeaderAndFooterRecordReceiptType_1(hParam, i);
-
+        getCurrencyDesc();
         getIssueType(hParam, i);
-
         getBodyRecordReceiptType_1(hParam, i);
-
         getTotalAmountReceiptType_1(hParam, i);
-
-        
-
     }
-
-    
 
     private void prepareRecordReceiptType_2_3(HParam hParam, int i, String type) throws Exception
 
@@ -2120,7 +2108,40 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
     }
 
-    
+    private void getCompanyInfo() throws Exception {
+        try {
+
+            sql_query =
+                " SELECT C.COY, C.COY_NAME, C.COY_ADDR1, C.COY_ADDR2, C.COY_ADDR3, C.COY_PHONE, C.COY_FAX FROM " +
+                SYSProfitSchema + ".COYMST C ";
+            pstmtHdr = conn.prepareStatement(sql_query);
+            rsHdr = pstmtHdr.executeQuery();
+            
+            if (rsHdr != null && rsHdr.next()) {
+                strCoyName = getDescription(rsHdr.getString("COY_NAME"));
+                strADDRESS_1 = getDescription(rsHdr.getString("COY_ADDR1"));
+                strADDRESS_2 = getDescription(rsHdr.getString("COY_ADDR2"));
+                strADDRESS_3 = getDescription(rsHdr.getString("COY_ADDR3"));
+                String strTel = getDescription(rsHdr.getString("COY_PHONE"));
+                String strFax = getDescription(rsHdr.getString("COY_FAX"));
+                strADDRESS_4 = "Tel.: " + strTel + "   Fax.: " + strFax;
+            }
+        } catch (Exception e) {
+            throw (e);
+        } finally {
+            try {
+                if (rsHdr != null) {
+                    rsHdr.close();
+                }
+                if (pstmtHdr != null) {
+                    pstmtHdr.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            pstmtHdr = null;
+        }
+    }
 
     private void getHeaderAndFooterRecordReceiptType_1(HParam hParam, int i) throws Exception
 
@@ -2894,7 +2915,36 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
     }
 
-    
+    private void getCurrencyDesc() throws Exception {
+        try {
+
+            sql_query =
+                " SELECT C.FRGN_CRNCY_DESC, C.FRGN_CRNCY_CD FROM " + SYSProfitSchema + ".CURRMST C, " + SYSProfitSchema +
+                ".COYSUBMST CO WHERE C.FRGN_CRNCY_CD = CO.FRGN_CRNCY_CD ";
+
+            pstmtHdr = conn.prepareStatement(sql_query);
+            rsHdr = pstmtHdr.executeQuery();
+            if (rsHdr != null && rsHdr.next()) {
+                resultMap.put("CURRENCY_DESC", rsHdr.getString("FRGN_CRNCY_DESC"));
+                resultMap.put("CURRENCY_CD", rsHdr.getString("FRGN_CRNCY_CD"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rsHdr != null) {
+                    rsHdr.close();
+                }
+                if (pstmtHdr != null) {
+                    pstmtHdr.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            rsHdr = null;
+            pstmtHdr = null;
+        }
+    }
 
     private void getIssueType(HParam hParam, int i) throws Exception
 
@@ -4526,8 +4576,6 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
     }
 
-    
-
     private PdfPTable createTableSuperHdr() throws BadElementException, DocumentException, Exception, Exception 
 
     {
@@ -4555,13 +4603,21 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
         String strTotalAmount = "";
 
         String strIssueType   = "";
+        
+        String strCurrencyDesc = "";
+        String strCurrency    = "";
 
          java.util.Date dtDate = resultMap.get("DATE")!=null && !((String)resultMap.get("DATE")).equals("") ? qrMisc.parseDate((String)resultMap.get("DATE"), "yyyy-MM-dd") : null;
 
         String strDate = dtDate!=null ? fmt.format(dtDate) : "";
 
+        if(resultMap.get("CURRENCY_DESC")!=null && !((String)resultMap.get("CURRENCY_DESC")).equals("")) {
+            strCurrencyDesc = getDescription((String)resultMap.get("CURRENCY_DESC"));
+        }
+        if(resultMap.get("CURRENCY_CD")!=null && !((String)resultMap.get("CURRENCY_CD")).equals("")) {
+            strCurrency = getDescription((String)resultMap.get("CURRENCY_CD"));
+        }
         
-
         if(resultMap.get("PURCHASER")!=null && !((String)resultMap.get("PURCHASER")).equals(""))
 
         {
@@ -4582,7 +4638,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         {
 
-            strTotalAmount = "RM " + new DecimalFormat("#0.00").format(Double.parseDouble((String)resultMap.get("TOTAL_AMOUNT")));
+            strTotalAmount = strCurrency + " " + new DecimalFormat("#0.00").format(Double.parseDouble((String)resultMap.get("TOTAL_AMOUNT")));
 
         }
 
@@ -4712,7 +4768,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         
 
-        cell = new PdfPCell(new Phrase("RINGGIT MALAYSIA", FontChinese));
+        cell = new PdfPCell(new Phrase(strCurrencyDesc, FontChinese));
 
         cell.disableBorderSide(Rectangle.BOX);
 
@@ -4930,18 +4986,14 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
     
 
-    private PdfPTable createTableHdr() throws BadElementException, DocumentException, Exception, Exception
-
-    {
-
+    private PdfPTable createTableHdr() throws BadElementException, DocumentException, Exception, Exception {
+        String strCurrency = "";
+        if (resultMap.get("CURRENCY_CD") != null && !((String) resultMap.get("CURRENCY_CD")).equals("")) {
+            strCurrency = getDescription((String) resultMap.get("CURRENCY_CD"));
+        }
+        
         PdfPTable tableHdr = new PdfPTable(4);
-
-        
-
         int headerwidths[] = { 38, 18, 12, 32 };
-
-        
-
         tableHdr.setWidthPercentage(100);
 
         tableHdr.setWidths(headerwidths);
@@ -4966,7 +5018,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         
 
-        cell = new PdfPCell(new Phrase("UNIT PRICE (RM)", FontChinese_tb_title_white));
+        cell = new PdfPCell(new Phrase("UNIT PRICE (" + strCurrency + ")", FontChinese_tb_title_white));
 
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 
@@ -4990,7 +5042,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         
 
-        cell = new PdfPCell(new Phrase("AMOUNT (RM)", FontChinese_tb_title_white));
+        cell = new PdfPCell(new Phrase("AMOUNT (" + strCurrency + ")", FontChinese_tb_title_white));
 
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 
@@ -5710,7 +5762,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         
 
-        cell = new PdfPCell(new Phrase(SYSCompanyName + " " + SYSCompanyRegNo, FontChinese_tb_title)); //Company Name
+        cell = new PdfPCell(new Phrase(strCoyName + " " + SYSCompanyRegNo, FontChinese_tb_title)); //Company Name
 
         cell.disableBorderSide(Rectangle.BOX);
 
@@ -5916,17 +5968,8 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
 //        }
 
-
-        if (this.isFoundInStr(SYSGVSelRefGVTYPE, gvType) &&
-        	this.isFoundInStr(SysIssueSelRefRsnCd, rsnCd)){
-        	//it is PROREF
-        	cell = new PdfPCell(new Phrase("COLLECTION OF AEON VOUCHER (S)", FontChinese_title));
-        } else {
-        	//the rest
-        	cell = new PdfPCell(new Phrase("COLLECTION OF AEON GIFT VOUCHER (S)", FontChinese_title));
-        }
+        cell = new PdfPCell(new Phrase(strReceiptName, FontChinese_title));
         
-
       //cell = new PdfPCell(new Phrase("COLLECTION OF AEON GIFT VOUCHER (S)", FontChinese_title));
         //cell = new PdfPCell(new Phrase("COLLECTION OF PROMOTION VOUCHER-REFUND", FontChinese_title));
 
@@ -7550,7 +7593,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         
 
-        cell = new PdfPCell(new Phrase(SYSCompanyName + " " + SYSCompanyRegNo, FontChinese_tb_title_small)); //Company Name
+        cell = new PdfPCell(new Phrase(strCoyName + " " + SYSCompanyRegNo, FontChinese_tb_title_small)); //Company Name
 
         cell.disableBorderSide(Rectangle.BOX);
 
@@ -8513,7 +8556,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
         footertable_1.setHorizontalAlignment(Element.ALIGN_CENTER);
 
         
-
+        strFOOTER_1 = strFOOTER_1.replaceAll("<RECEIPT NAME>", strReceiptName);
         PdfPCell cell = new PdfPCell(new Paragraph(strFOOTER_1, FontChineseSmall));
 
         cell.disableBorderSide(Rectangle.BOX);
@@ -10666,7 +10709,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         
 
-        cell = new PdfPCell(new Phrase(SYSCompanyName + " " + SYSCompanyRegNo, FontChinese_tb_title));
+        cell = new PdfPCell(new Phrase(strCoyName + " " + SYSCompanyRegNo, FontChinese_tb_title));
 
         cell.disableBorderSide(Rectangle.BOX);
 
@@ -10800,7 +10843,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         
 
-        cell = new PdfPCell(new Phrase(COY + " - " + SYSCompanyName, FontChinese));
+        cell = new PdfPCell(new Phrase(COY + " - " + strCoyName, FontChinese));
 
         cell.disableBorderSide(Rectangle.BOX);
 
