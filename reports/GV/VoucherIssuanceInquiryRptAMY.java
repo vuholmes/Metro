@@ -275,29 +275,25 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
     private String strNOTE                  = "NOTE : ";
 
-    private String strFooterLine1           = "Gift Redemption item(s) may not be returned or exchanged after collection.";
+    private String strFooterLine1           = "";
 
-    private String strFooterLine2           = "If you have any inquiries, please call our ";
+    private String strFooterLine2           = "";
 
-    private String strFooterLine3           = "AEON Careline ";
+    private String strFooterLine3           = "";
 
-    private String strFooterLine4           = "(10am - 11pm) ";
+    private String strFooterLine4           = "";
 
-    private String strFooterLine5           = "1-300-80-AEON(2366)";
+    private String strFooterLine5           = "";
 
-    private String strFooterLine6           = "Note : AEON Gift Voucher is not exchangeable for cash.";
+    private String strFooterLine6           = "";
 
-    private String strFooterLine7           = "* Only Principal AEON MEMBER Cardholders with valid/non-expired membership " +
+    private String strFooterLine7           = "";
 
-                                              "are eligible for the rebate redemption.";
+    private String strFooterLine8           = "";
 
-    private String strFooterLine8           = "* Principal AEON MEMBER Cardholders are required to produce their AEON MEMBER Card, " +
+    private String strFooterLine9           = "";
 
-                                              "I/C or passport in order to redeem the Gift Vouchers.";
-
-    private String strFooterLine9           = "* You may check your points and rebate entitlement by visiting www.aeonretail.com.my";
-
-    
+    private String strFooterLine10           = "";
 
     private final String strISSUANCE_FORM         = "1";
 
@@ -400,8 +396,6 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
         SysIssueSelRefRsnCd = getPROFITVV(COY, "SysIssueSelRefRsnCd");
         SYSGVSelRefGVTYPE = getPROFITVV(COY, "SYSGVSelRefGVTYPE");
         
-        strFOOTER_1 = getPROFITVV(COY, "SYSGvAckPrintType1");
-        strFOOTER_3 = getPROFITVV(COY, "SYSGvFootPrintType1");
     }
 
     
@@ -737,6 +731,15 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
         SYSMbrCardTyp       = getPROFITVV(COY, "SYSMbrCardTyp"); //Added on 20160331 get member card type
 
         getCompanyInfo();
+        
+        strFOOTER_1 = getPROFITVV(COY, "SYSGvAckPrintType1");
+        strFOOTER_3 = getPROFITVV(COY, "SYSGvFootPrintType1");
+        
+        strFooterLine1 = getPROFITVV(COY, "SYSGvGRFooter1");
+        strFooterLine2 = getPROFITVV(COY, "SYSGvGRFooter2");
+        
+        strFooterLine6 = getPROFITVV(COY, "SYSGvRBFooter1");
+        strFooterLine10 = getPROFITVV(COY, "SYSGvRBFooter2");
 
         BASE_FONT_Chinese           = BaseFont.createFont(SYSRptFontTaxInv, SYSRptFontEncode2, BaseFont.NOT_EMBEDDED);
 
@@ -2139,6 +2142,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            rsHdr = null;
             pstmtHdr = null;
         }
     }
@@ -5693,7 +5697,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         
 
-        cell = new PdfPCell(new Phrase(strCoyName + " " + SYSCompanyRegNo, FontChinese_tb_title)); //Company Name
+        cell = new PdfPCell(new Phrase(SYSCompanyName + " " + SYSCompanyRegNo, FontChinese_tb_title)); //Company Name
 
         cell.disableBorderSide(Rectangle.BOX);
 
@@ -6569,15 +6573,11 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
         //-------------------------------------------------------------------------------------------------------//
 
         
-
-        cell = new PdfPCell(new Phrase("AEON MEMBER REBATE REDEMPTION FORM", FontChinese_title2));
-
+        String strPrintType3Title = getPROFITVV(COY, "SYSGvRBTitle");
+        cell = new PdfPCell(new Phrase(strPrintType3Title, FontChinese_title2));
         cell.disableBorderSide(Rectangle.BOX);
-
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-
         cell.setVerticalAlignment(Element.ALIGN_TOP);
-
         cell.setFixedHeight(23f);
 
         if(reprint.equals("true")) 
@@ -6629,20 +6629,13 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
         table.addCell(cell);
 
         
-
-        cell = new PdfPCell(new Phrase("(Please tick (v) the collection period)", FontChineseSmall));
-
+        String strCollectionPeriodNote = getPROFITVV(COY, "SYSGvRBHeader");
+        cell = new PdfPCell(new Phrase(strCollectionPeriodNote, FontChineseSmall));
         cell.disableBorderSide(Rectangle.BOX);
-
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-
         cell.setVerticalAlignment(Element.ALIGN_TOP);
-
         cell.setColspan(3);
-
         table.addCell(cell);
-
-        
 
         return table; 
 
@@ -7156,8 +7149,6 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         //----------------------------------------------------------------------------------------//
 
-        
-
         cell = new PdfPCell(new Phrase("I acknowledge that I have received my", FontChineseSmall)); 
 
         cell.disableBorderSide(Rectangle.BOX);
@@ -7172,18 +7163,16 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         table.addCell(cell);
 
+        String strCurrency = "";
+        if(resultMap.get("CURRENCY_CD")!=null && !((String)resultMap.get("CURRENCY_CD")).equals("")) {
+            strCurrency = getDescription((String)resultMap.get("CURRENCY_CD"));
+        }
         
-
-        cell = new PdfPCell(new Phrase("RM", FontChinese_tb_title_small)); 
-
+        cell = new PdfPCell(new Phrase(strCurrency, FontChinese_tb_title_small)); 
         cell.disableBorderSide(Rectangle.BOX);
-
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-
         cell.setFixedHeight(13f);
-
         table.addCell(cell);
 
         
@@ -7340,19 +7329,15 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         table.addCell(cell);
 
-        
-
-        cell = new PdfPCell(new Phrase("TOTAL AMOUNT (RM)", FontChinese_tb_title_white)); 
-
+        String strCurrency = "";
+        if(resultMap.get("CURRENCY_CD")!=null && !((String)resultMap.get("CURRENCY_CD")).equals("")) {
+            strCurrency = getDescription((String)resultMap.get("CURRENCY_CD"));
+        }
+        cell = new PdfPCell(new Phrase("TOTAL AMOUNT (" + strCurrency + ")", FontChinese_tb_title_white)); 
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-
         cell.setVerticalAlignment(Element.ALIGN_TOP);
-
         cell.setBackgroundColor(bgColor);
-
         table.addCell(cell);
-
-        
 
         return table;
 
@@ -7430,16 +7415,16 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         table.addCell(cell);
 
-        
 
-        cell = new PdfPCell(new Phrase("AMOUNT (RM)", FontChinese_tb_title_white)); 
+        String strCurrency = "";
+        if(resultMap.get("CURRENCY_CD")!=null && !((String)resultMap.get("CURRENCY_CD")).equals("")) {
+            strCurrency = getDescription((String)resultMap.get("CURRENCY_CD"));
+        }
 
+        cell = new PdfPCell(new Phrase("AMOUNT (" + strCurrency + ")", FontChinese_tb_title_white)); 
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-
         cell.setVerticalAlignment(Element.ALIGN_TOP);
-
         cell.setBackgroundColor(bgColor);
-
         table.addCell(cell);
 
         
@@ -7524,7 +7509,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         
 
-        cell = new PdfPCell(new Phrase(strCoyName + " " + SYSCompanyRegNo, FontChinese_tb_title_small)); //Company Name
+        cell = new PdfPCell(new Phrase(SYSCompanyName + " " + SYSCompanyRegNo, FontChinese_tb_title_small)); //Company Name
 
         cell.disableBorderSide(Rectangle.BOX);
 
@@ -7624,14 +7609,10 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         PdfPCell cell = null;
 
-
-
-        cell = new PdfPCell(new Phrase("REDEMPTION FORM", FontChinese_title));
-
+        String strPrintType2Title = getPROFITVV(COY, "SYSGvRDTitle");
+        cell = new PdfPCell(new Phrase(strPrintType2Title, FontChinese_title));
         cell.disableBorderSide(Rectangle.BOX);
-
         cell.setVerticalAlignment(Element.ALIGN_TOP);
-
         cell.setHorizontalAlignment(Element.ALIGN_LEFT); 
 
 //        cell.setPaddingTop(18f);
@@ -8514,16 +8495,11 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         PdfPCell cell = null;
 
-        
-
-        cell = new PdfPCell(new Phrase("I hereby receive this/these gift(s) in good condition.", FontChineseSmall));
-
+        String strPrintType2Ack = getPROFITVV(COY, "SYSGvAckPrintType2");
+        cell = new PdfPCell(new Phrase(strPrintType2Ack, FontChineseSmall));
         cell.disableBorderSide(Rectangle.BOX);
-
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-
         cell.setPadding(0);
-
         cell.setFixedHeight(10f);
 
         footertable_1.addCell(cell);
@@ -9422,18 +9398,13 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         footertable_2.addCell(cell);
 
-        
+        String strprintType3Ack = getPROFITVV(COY, "SYSGvAckPrintType3");        
 
-        cell = new PdfPCell(new Phrase("I hereby acknowledge that I have received the AEON Gift Voucher in good condition.", FontChineseSmall));
-
+        cell = new PdfPCell(new Phrase(strprintType3Ack, FontChineseSmall));
         cell.disableBorderSide(Rectangle.BOX);
-
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-
         cell.setVerticalAlignment(Element.ALIGN_TOP);
-
         cell.setPadding(0);
-
         footertable_2.addCell(cell);
 
         //***********************************************************************************************//
@@ -9593,19 +9564,14 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
         tbl.addCell(cell);
 
         
-
-        cell = new PdfPCell(new Phrase("AEON Store Code", FontChineseSmall));
-
+        String strStoreCode = getPROFITVV(COY, "SYSShortCoy");
+        
+        cell = new PdfPCell(new Phrase(strStoreCode, FontChineseSmall));
         cell.disableBorderSide(Rectangle.BOX);
-
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-
         cell.setPadding(0);
-
         cell.setPaddingLeft(2f);
-
         cell.setFixedHeight(10f);
-
         tbl.addCell(cell);
 
         
@@ -9950,7 +9916,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         
 
-        cell = new PdfPCell(new Phrase(strFooterLine2, FontChineseItalic_white));
+        cell = new PdfPCell(new Phrase(strFooterLine10, FontChineseItalic_white));
 
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 
@@ -10620,7 +10586,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         
 
-        cell = new PdfPCell(new Phrase(strCoyName + " " + SYSCompanyRegNo, FontChinese_tb_title));
+        cell = new PdfPCell(new Phrase(SYSCompanyName + " " + SYSCompanyRegNo, FontChinese_tb_title));
 
         cell.disableBorderSide(Rectangle.BOX);
 
@@ -10754,7 +10720,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         
 
-        cell = new PdfPCell(new Phrase(COY + " - " + strCoyName, FontChinese));
+        cell = new PdfPCell(new Phrase(COY + " - " + SYSCompanyName, FontChinese));
 
         cell.disableBorderSide(Rectangle.BOX);
 
@@ -11149,19 +11115,16 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
         tableHdr.addCell(cell);
 
         
-
-        cell = new PdfPCell(new Phrase("Amount (RM)", FontChinese_tb_title));
-
+        String strCurrency = "";
+        if(resultMap.get("CURRENCY_CD")!=null && !((String)resultMap.get("CURRENCY_CD")).equals("")) {
+            strCurrency = getDescription((String)resultMap.get("CURRENCY_CD"));
+        }
+        cell = new PdfPCell(new Phrase("Amount (" + strCurrency + ")", FontChinese_tb_title));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-
         cell.setVerticalAlignment(Element.ALIGN_MIDDLE);
-
         cell.setPadding(0);
-
         cell.setPaddingBottom(2f);
-
         cell.setFixedHeight(30f);
-
         tableHdr.addCell(cell);
 
         
