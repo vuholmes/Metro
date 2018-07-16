@@ -3942,7 +3942,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         {
 
-            sql_query = " SELECT Sum(G.TOT_AMOUNT) as TOT_AMT " +
+            sql_query = " SELECT Sum(G.TOT_AMOUNT) as TOT_AMT, SUM(G.DISC_AMT) AS TOTAL_DISC_AMT " +
 
                                 " FROM "+SYSProfitSchema+".GVLOGBOOK G, "+SYSProfitSchema+".GVDENOMST D " +
 
@@ -3982,14 +3982,10 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
             
 
-            if(rsHdr != null && rsHdr.next())
-
-            {
-
+            if(rsHdr != null && rsHdr.next()) {
                 resultMap.put("TOTAL_AMOUNT", rsHdr.getString("TOT_AMT"));
-
+                resultMap.put("TOTAL_DISCOUNT_AMOUNT", rsHdr.getString("TOTAL_DISC_AMT"));
             }
-
         }
 
         catch(Exception e)
@@ -4992,8 +4988,8 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
             strCurrency = getDescription((String) resultMap.get("CURRENCY_CD"));
         }
         
-        PdfPTable tableHdr = new PdfPTable(4);
-        int headerwidths[] = { 38, 18, 12, 32 };
+        PdfPTable tableHdr = new PdfPTable(5);
+        int headerwidths[] = { 38, 16, 8, 8, 30 };
         tableHdr.setWidthPercentage(100);
 
         tableHdr.setWidths(headerwidths);
@@ -5028,19 +5024,17 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         tableHdr.addCell(cell);
 
-        
-
         cell = new PdfPCell(new Phrase("QTY", FontChinese_tb_title_white));
-
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-
         cell.setVerticalAlignment(Element.ALIGN_TOP);
-
         cell.setBackgroundColor(bgColor);
-
         tableHdr.addCell(cell);
 
-        
+        cell = new PdfPCell(new Phrase("DISC (%)", FontChinese_tb_title_white));
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cell.setVerticalAlignment(Element.ALIGN_TOP);
+        cell.setBackgroundColor(bgColor);
+        tableHdr.addCell(cell);
 
         cell = new PdfPCell(new Phrase("AMOUNT (" + strCurrency + ")", FontChinese_tb_title_white));
 
@@ -5064,11 +5058,8 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
     {
 
-        PdfPTable datatable = new PdfPTable(4);
-
-        
-
-        int headerwidths[] = { 38, 18, 12, 32 };
+        PdfPTable datatable = new PdfPTable(5);
+        int headerwidths[] = { 38, 16, 8, 8, 30 };
 
         
 
@@ -5093,137 +5084,77 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
         
 
         if(reportBodyRecord.get("DESCRIPTION") != null && !((String)reportBodyRecord.get("DESCRIPTION")).equals(""))
-
         {
-
             strDescription = (String) reportBodyRecord.get("DESCRIPTION");
-
         }
-
         if(reportBodyRecord.get("UNIT_PRICE") != null && !((String)reportBodyRecord.get("UNIT_PRICE")).equals(""))
-
         {
-
             strUnitPrice = new DecimalFormat("#0.00").format(Double.parseDouble((String)reportBodyRecord.get("UNIT_PRICE")));
-
         }
 
         else
-
         {
-
             strUnitPrice = "0.00";
-
         }
 
         if(reportBodyRecord.get("QTY") != null && !((String)reportBodyRecord.get("QTY")).equals(""))
-
         {
-
             strQty = (String) reportBodyRecord.get("QTY");
-
         }
-
         else
-
         {
-
             strQty = "0";
-
         }
 
-        if(reportBodyRecord.get("AMOUNT") != null && !((String)reportBodyRecord.get("AMOUNT")).equals(""))
-
-        {
-
-            double dblAmount = Double.parseDouble((String)reportBodyRecord.get("AMOUNT"));
-
+        if (reportBodyRecord.get("AMOUNT") != null && !((String) reportBodyRecord.get("AMOUNT")).equals("")) {
+            double dblAmount = Double.parseDouble((String) reportBodyRecord.get("AMOUNT"));
             strAmount = new DecimalFormat("#0.00").format(dblAmount);
-
-            
-
             currentPageTotalAmount += dblAmount;
-
-        }
-
-        else
-
-        {
-
+        } else {
             strAmount = "0.00";
-
         }
-
-        
 
         PdfPCell cell = null;
-
         
-
         cell = new PdfPCell(new Phrase(strDescription, FontChinese));
-
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-
         cell.setVerticalAlignment(Element.ALIGN_TOP);
-
         cell.setPadding(0);
-
         cell.setPaddingLeft(1f);
-
         cell.setFixedHeight(13f);
-
         datatable.addCell(cell);
-
-        
 
         cell = new PdfPCell(new Phrase(strUnitPrice, FontChinese));
-
         cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-
         cell.setVerticalAlignment(Element.ALIGN_TOP);
-
         cell.setPadding(0);
-
         cell.setPaddingRight(1f);
-
         cell.setFixedHeight(13f);
-
         datatable.addCell(cell);
-
-        
 
         cell = new PdfPCell(new Phrase(strQty, FontChinese));
-
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-
         cell.setVerticalAlignment(Element.ALIGN_TOP);
-
         cell.setPadding(0);
-
         cell.setFixedHeight(13f);
-
         datatable.addCell(cell);
 
-        
+        cell = new PdfPCell(new Phrase("0.00", FontChinese));
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cell.setVerticalAlignment(Element.ALIGN_TOP);
+        cell.setPadding(0);
+        cell.setFixedHeight(13f);
+        datatable.addCell(cell);
 
         cell = new PdfPCell(new Phrase(strAmount, FontChinese));
-
         cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-
         cell.setVerticalAlignment(Element.ALIGN_TOP);
-
         cell.setPadding(0);
-
         cell.setPaddingRight(1f);
-
         cell.setFixedHeight(13f);
-
         datatable.addCell(cell);
 
-        
-
         document.add(datatable);
-
     }
 
     
@@ -8169,72 +8100,52 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
     
 
-    private void printTotalTable() throws BadElementException, DocumentException, Exception
+    private void printTotalTable() throws BadElementException, DocumentException, Exception {
+        double totalDiscount = 0;
+        PdfPTable totaltable = new PdfPTable(5);
+        if (resultMap.get("TOTAL_DISCOUNT_AMOUNT") != null &&
+            !((String) resultMap.get("TOTAL_DISCOUNT_AMOUNT")).equals("")) {
+            totalDiscount = Double.parseDouble((String) resultMap.get("TOTAL_DISCOUNT_AMOUNT"));
+        }
 
-    {
-
-        PdfPTable totaltable = new PdfPTable(4);
-
-        
-
-        int headerwidths[] = { 38, 18, 12, 32 };
-
-        
+        int headerwidths[] = { 38, 16, 8, 8, 30 };
 
         totaltable.setWidthPercentage(100);
-
         totaltable.setWidths(headerwidths);
-
         totaltable.getDefaultCell().setUseAscender(true);
-
         totaltable.getDefaultCell().setUseDescender(true);
-
-        
 
         PdfPCell cell = null;
 
-        
-
         cell = new PdfPCell(new Phrase("TOTAL : ", FontChinese_tb_title));
-
         cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-
         cell.setVerticalAlignment(Element.ALIGN_TOP);
-
         cell.setPadding(0);
-
         cell.setPaddingRight(1f);
-
         cell.setFixedHeight(13f);
-
         cell.setColspan(3);
-
         totaltable.addCell(cell);
 
-        
 
-        String strTotalAmount = new DecimalFormat("#0.00").format(currentPageTotalAmount);
-
-        
-
-        cell = new PdfPCell(new Phrase(strTotalAmount, FontChinese_tb_title));
-
-        cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-
+        String strTotalDiscountAmount = new DecimalFormat("#0.00").format(totalDiscount);
+        cell = new PdfPCell(new Phrase(strTotalDiscountAmount, FontChinese_tb_title));
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell.setVerticalAlignment(Element.ALIGN_TOP);
-
         cell.setPadding(0);
-
         cell.setPaddingRight(1f);
-
         cell.setFixedHeight(13f);
-
         totaltable.addCell(cell);
 
-        
+        String strTotalAmount = new DecimalFormat("#0.00").format(currentPageTotalAmount - totalDiscount);
+        cell = new PdfPCell(new Phrase(strTotalAmount, FontChinese_tb_title));
+        cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+        cell.setVerticalAlignment(Element.ALIGN_TOP);
+        cell.setPadding(0);
+        cell.setPaddingRight(1f);
+        cell.setFixedHeight(13f);
+        totaltable.addCell(cell);
 
         document.add(totaltable);
-
     }
 
     
@@ -11801,11 +11712,11 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
             width = new ArrayList();
 
-            blankTable = new PdfPTable(4);
+            blankTable = new PdfPTable(5);
 
             
 
-            int columnWidths[] = { 38, 18, 12, 32 };
+            int columnWidths[] = { 38, 16, 8, 8, 30 };
 
             width.add(columnWidths);
 
