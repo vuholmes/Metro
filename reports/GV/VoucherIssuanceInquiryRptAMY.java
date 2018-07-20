@@ -4658,7 +4658,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         
 
-        cell = new PdfPCell(new Phrase("PURCHASER", FontChinese));
+        cell = new PdfPCell(new Phrase(getTranslatedCaptionMsg("PURCHASER"), FontChinese));
 
         cell.disableBorderSide(Rectangle.BOX);
 
@@ -4718,7 +4718,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         
 
-        cell = new PdfPCell(new Phrase("CONTACT NO", FontChinese));
+        cell = new PdfPCell(new Phrase(getTranslatedCaptionMsg("CONTACT NO"), FontChinese));
 
         cell.disableBorderSide(Rectangle.BOX);
 
@@ -4768,7 +4768,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         
 
-        cell = new PdfPCell(new Phrase(strCurrencyDesc, FontChinese));
+        cell = new PdfPCell(new Phrase(getTranslatedCaptionMsg(strCurrencyDesc), FontChinese));
 
         cell.disableBorderSide(Rectangle.BOX);
 
@@ -4828,7 +4828,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         
 
-        cell = new PdfPCell(new Phrase("DATE", FontChinese));
+        cell = new PdfPCell(new Phrase(getTranslatedCaptionMsg("DATE"), FontChinese));
 
         cell.disableBorderSide(Rectangle.BOX);
 
@@ -4874,7 +4874,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         
 
-        cell = new PdfPCell(new Phrase("ISSUE TYPE", FontChinese));
+        cell = new PdfPCell(new Phrase(getTranslatedCaptionMsg("ISSUE TYPE"), FontChinese));
 
         cell.disableBorderSide(Rectangle.BOX);
 
@@ -5004,56 +5004,40 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         PdfPCell cell = null;
 
-        
-
-        cell = new PdfPCell(new Phrase("DESCRIPTION", FontChinese_tb_title_white));
-
+        cell = new PdfPCell(new Phrase(getTranslatedCaptionMsg("DESCRIPTION"), FontChinese_tb_title_white));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-
         cell.setVerticalAlignment(Element.ALIGN_TOP);
-
         cell.setBackgroundColor(bgColor);
-
         tableHdr.addCell(cell);
 
         
-
-        cell = new PdfPCell(new Phrase("UNIT PRICE (" + strCurrency + ")", FontChinese_tb_title_white));
-
-        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-
-        cell.setVerticalAlignment(Element.ALIGN_TOP);
-
-        cell.setBackgroundColor(bgColor);
-
-        tableHdr.addCell(cell);
-
-        cell = new PdfPCell(new Phrase("QTY", FontChinese_tb_title_white));
+        String strUnitPriceLabel = getTranslatedCaptionMsg("UNIT PRICE") + " (" + strCurrency + ")";
+        cell = new PdfPCell(new Phrase(strUnitPriceLabel, FontChinese_tb_title_white));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell.setVerticalAlignment(Element.ALIGN_TOP);
         cell.setBackgroundColor(bgColor);
         tableHdr.addCell(cell);
 
-        cell = new PdfPCell(new Phrase("DISC (%)", FontChinese_tb_title_white));
+        cell = new PdfPCell(new Phrase(getTranslatedCaptionMsg("QTY"), FontChinese_tb_title_white));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
         cell.setVerticalAlignment(Element.ALIGN_TOP);
         cell.setBackgroundColor(bgColor);
         tableHdr.addCell(cell);
 
-        cell = new PdfPCell(new Phrase("AMOUNT (" + strCurrency + ")", FontChinese_tb_title_white));
-
+        cell = new PdfPCell(new Phrase(getTranslatedCaptionMsg("DISC") + " (%)", FontChinese_tb_title_white));
         cell.setHorizontalAlignment(Element.ALIGN_CENTER);
-
         cell.setVerticalAlignment(Element.ALIGN_TOP);
-
         cell.setBackgroundColor(bgColor);
-
         tableHdr.addCell(cell);
 
-        
+        String strAmountLabel = getTranslatedCaptionMsg("AMOUNT") + " (" + strCurrency + ")";
+        cell = new PdfPCell(new Phrase(strAmountLabel, FontChinese_tb_title_white));
+        cell.setHorizontalAlignment(Element.ALIGN_CENTER);
+        cell.setVerticalAlignment(Element.ALIGN_TOP);
+        cell.setBackgroundColor(bgColor);
+        tableHdr.addCell(cell);
 
         return tableHdr;
-
     }
 
     
@@ -5903,7 +5887,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
 //        }
 
-        cell = new PdfPCell(new Phrase(strReceiptName, FontChinese_title));
+        cell = new PdfPCell(new Phrase(getTranslatedReportMsg(strReceiptName), FontChinese_title));
         
       //cell = new PdfPCell(new Phrase("COLLECTION OF AEON GIFT VOUCHER (S)", FontChinese_title));
         //cell = new PdfPCell(new Phrase("COLLECTION OF PROMOTION VOUCHER-REFUND", FontChinese_title));
@@ -8098,7 +8082,8 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         PdfPCell cell = null;
 
-        cell = new PdfPCell(new Phrase("TOTAL : ", FontChinese_tb_title));
+        String strTotalLabel = getTranslatedCaptionMsg("TOTAL") + " : ";
+        cell = new PdfPCell(new Phrase(strTotalLabel, FontChinese_tb_title));
         cell.setHorizontalAlignment(Element.ALIGN_RIGHT);
         cell.setVerticalAlignment(Element.ALIGN_TOP);
         cell.setPadding(0);
@@ -9092,7 +9077,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         
 
-        cell = new PdfPCell(new Phrase("ACKNOWLEDGED BY", FontChinese));
+        cell = new PdfPCell(new Phrase(getTranslatedCaptionMsg("ACKNOWLEDGED BY"), FontChinese));
 
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 
@@ -9108,7 +9093,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         
 
-        cell = new PdfPCell(new Phrase("WITNESSED BY", FontChinese));
+        cell = new PdfPCell(new Phrase(getTranslatedCaptionMsg("WITNESSED BY"), FontChinese));
 
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 
@@ -9124,7 +9109,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         
 
-        cell = new PdfPCell(new Phrase("PAYMENT MODE", FontChinese));
+        cell = new PdfPCell(new Phrase(getTranslatedCaptionMsg("PAYMENT MODE"), FontChinese));
 
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 
@@ -10208,7 +10193,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         
 
-        cell = new PdfPCell(new Phrase("CASH", FontChineseSmall));
+        cell = new PdfPCell(new Phrase(getTranslatedCaptionMsg("CASH"), FontChineseSmall));
 
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 
@@ -10246,7 +10231,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         
 
-        cell = new PdfPCell(new Phrase("CREDIT CARD", FontChineseSmall));
+        cell = new PdfPCell(new Phrase(getTranslatedCaptionMsg("CREDIT CARD"), FontChineseSmall));
 
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 
@@ -10284,7 +10269,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         
 
-        cell = new PdfPCell(new Phrase("CHEQUE NO", FontChinese));
+        cell = new PdfPCell(new Phrase(getTranslatedCaptionMsg("CHEQUE NO"), FontChinese));
 
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 
@@ -10322,7 +10307,7 @@ public class VoucherIssuanceInquiryRptAMY extends GenericReport
 
         
 
-        cell = new PdfPCell(new Phrase("TELEGRAPHIC TRANSFER", FontChineseSmall));
+        cell = new PdfPCell(new Phrase(getTranslatedCaptionMsg("TELEGRAPHIC TRANSFER"), FontChineseSmall));
 
         cell.setHorizontalAlignment(Element.ALIGN_LEFT);
 
