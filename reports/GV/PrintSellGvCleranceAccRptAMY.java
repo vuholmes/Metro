@@ -70,13 +70,11 @@ public class PrintSellGvCleranceAccRptAMY extends GenericExcel
    private boolean test_run = false;
    private boolean first_column = true;
    
-   private PreparedStatement pstmtDEL = null;
    private PreparedStatement prepareStmt = null;
    private ResultSet rs = null;
-   private PreparedStatement getCountQuery_ps = null;
-   private ResultSet getCountQuery_rs = null;
    private CoymstSQL coymstSQL;
    private CoysubmstSQL coysubmstSQL;
+   private ProfitvvSQL profitvvSQL = null;
   
    private HSSFSheet sheet                      = null;
    private HSSFWorkbook workBook                = null;
@@ -120,8 +118,9 @@ public class PrintSellGvCleranceAccRptAMY extends GenericExcel
   
    private void initObjSQL() throws SQLException
    {
-      coymstSQL      = new CoymstSQL(conn);     
-      coysubmstSQL      = new CoysubmstSQL(conn);     
+      coymstSQL      = new CoymstSQL(conn);
+      coysubmstSQL      = new CoysubmstSQL(conn);
+      profitvvSQL = new ProfitvvSQL(conn);
    }   
    
    private void jInit(HParam hParam) throws Exception
@@ -156,15 +155,10 @@ public class PrintSellGvCleranceAccRptAMY extends GenericExcel
       String strSYSRoundMode      = getProfitVV("SYSRoundMode", strCoy);
       String strSYSDecimalDisplay = getProfitVV("SYSDecimalDisplay", strCoy);
       String strSYSCurrGroupRpt   = getProfitVV("SYSCurrGroupRpt", strCoy);
-      
+      maxPerSheet                 = Integer.parseInt(getProfitVV("SYSMaxLinesPerSheet", strCoy));
+       
       currencyConverter = new CurrencyConverter(strSYSUserLanguage, strSYSUserCountry, Integer.parseInt(strSYSRoundPlace), Integer.parseInt(strSYSRoundMode), Integer.parseInt(strSYSDecimalDisplay));
       currencyConverter.setGrouping(false);
-      
-      // get the max line per sheet
-      ProfitvvSQL profitvvSQL = new ProfitvvSQL(conn);
-      profitvvSQL.setVNM("SYSMaxLinesPerSheet");
-      profitvvSQL.setCOY(strCoy);
-      profitvvSQL.getByKey(); 
       
       coymstSQL.setCOY(strCoy); 
       coymstSQL.getByKey();
@@ -172,8 +166,6 @@ public class PrintSellGvCleranceAccRptAMY extends GenericExcel
       coysubmstSQL.setCOY(strCoy);
       coysubmstSQL.setCOY_SUB(strCoySub);
       coysubmstSQL.getByKey();
-      
-      maxPerSheet = Integer.parseInt(profitvvSQL.VNM_VDTVL());  
      
       // create a new workbook
       workBook = new HSSFWorkbook();
@@ -181,8 +173,6 @@ public class PrintSellGvCleranceAccRptAMY extends GenericExcel
    
    public String getProfitVV(String vnm, String coy) throws SQLException
    {
-	    ProfitvvSQL profitvvSQL = null;
-	    profitvvSQL = new ProfitvvSQL(conn);
       profitvvSQL.setVNM(vnm);
       profitvvSQL.setCOY(coy);
       profitvvSQL.getByKey(); 
@@ -210,49 +200,25 @@ public class PrintSellGvCleranceAccRptAMY extends GenericExcel
          e.printStackTrace();
       }
       finally
-      {
-        closeStatement();     
+      {  
+          if (workBook != null) {
+             workBook = null;
+          }
+          
          try {
-            if (workBook != null) {
-               workBook = null;
-            }
-         } catch (Exception e) {}
-         
-         try {
-            if (rs != null)
-            {
+            if (rs != null) {
                rs.close();
-               rs = null;
             }
          } catch (Exception Ex) {}
-     
+         rs = null;
          
          try {
-            if (prepareStmt != null)
-            {
+            if (prepareStmt != null) {
                prepareStmt.close();
-               prepareStmt = null;
             }
          } catch (Exception Ex) {}
+         prepareStmt = null;
          
-         
-         try {
-            if (getCountQuery_ps != null)
-            {
-               getCountQuery_ps.close();
-               getCountQuery_ps = null;
-            }
-         } catch (Exception Ex) {}
-         
-         try {
-            if (getCountQuery_rs != null)
-            {
-               getCountQuery_rs.close();
-               getCountQuery_rs = null;
-            }
-         } catch (Exception Ex) {}
-
-                  
          closeConnection();
          super.closeOutputStream();
       }
@@ -281,14 +247,7 @@ public class PrintSellGvCleranceAccRptAMY extends GenericExcel
          setCriteria();
          setNoDataStyle();
          
-         if(strReportType.equals("M"))
-         {
-           process_sheet();
-         }
-         else if (strReportType.equals("D"))
-         {
-           process_sheet();
-         }
+         process_sheet();
     
          System.out.println("finished print ..." + sdf.format(cal.getTime()));
          long end = System.currentTimeMillis();
@@ -312,10 +271,7 @@ public class PrintSellGvCleranceAccRptAMY extends GenericExcel
       
       HSSFRow headerRow = null;
       boolean create_hdr = true;
-      boolean first_time = true;
-      boolean blnIsCreateDenom = false;
-      int sheetCreated = 1;      
-      int counter = 1;
+      int sheetCreated = 1;
       
       if (!rs.isBeforeFirst()) //check is it no data
       {
@@ -586,44 +542,39 @@ public class PrintSellGvCleranceAccRptAMY extends GenericExcel
         headerCell.setCellValue(getTranslatedReportMsg("Daily Selling Voucher Clearance Account Report"));
       headerCell.setCellStyle(ReportTitleStyle);
       
-      String strGLCode = getTranslatedCaptionMsg("GL Code") + ": " + strGlCode;
       region = new Region(5, (short) 0, 5, (short)1);
       sheet.addMergedRegion(region);
       headerRow = sheet.createRow((short) 5);
       headerCell = headerRow.createCell((short) 0);
-      headerCell.setCellValue(strGLCode);
+      headerCell.setCellValue(getTranslatedCaptionMsg("GL Code") + ": " + strGlCode);
       headerCell.setCellStyle(ReportCriteriaStyle);   
       
-      String strStoreValue = getTranslatedCaptionMsg("Store") + ": " + (strStore.equals("")?"ALL":strStore);
       region = new Region(6, (short) 0, 6, (short)1);
       sheet.addMergedRegion(region);
       headerRow = sheet.createRow((short) 6);
       headerCell = headerRow.createCell((short) 0);
-      headerCell.setCellValue(strStoreValue);
+      headerCell.setCellValue(getTranslatedCaptionMsg("Store") + ": " + (strStore.equals("")? getTranslatedCaptionMsg("ALL") : strStore));
       headerCell.setCellStyle(ReportCriteriaStyle);      
 
-      String strIssuedDateFrom = getTranslatedCaptionMsg("Issued Date From") + ": " + strFrDateIssue;
       region = new Region(4, (short) 2, 4, (short)3);
       sheet.addMergedRegion(region);
       headerRow = sheet.createRow((short) 4);
       headerCell = headerRow.createCell((short) 2);
-      headerCell.setCellValue(strIssuedDateFrom);
+      headerCell.setCellValue(getTranslatedCaptionMsg("Issued Date From") + ": " + strFrDateIssue);
       headerCell.setCellStyle(ReportCriteriaStyle);   
       
-      String strIssuedDateTo = getTranslatedCaptionMsg("Issued Date To") + ": " + strToDateIssue;
       region = new Region(5, (short) 2, 5, (short)3); 
       sheet.addMergedRegion(region);
       headerRow = sheet.createRow((short) 5);
       headerCell = headerRow.createCell((short) 2);
-      headerCell.setCellValue(strIssuedDateTo);
+      headerCell.setCellValue(getTranslatedCaptionMsg("Issued Date To") + ": " + strToDateIssue);
       headerCell.setCellStyle(ReportCriteriaStyle);   
  
-      String strPrintedBy = getTranslatedCaptionMsg("Printed By") + ": ";
       region = new Region(4, (short) 5, 4, (short)5);
       sheet.addMergedRegion(region);
       headerRow = sheet.createRow((short) 4);
       headerCell = headerRow.createCell((short) 5);
-      headerCell.setCellValue(strPrintedBy);
+      headerCell.setCellValue(getTranslatedCaptionMsg("Printed By") + ": ");
       headerCell.setCellStyle(ReportCriteriaStyle);
     
       region = new Region(4, (short) 6, 4, (short)6);
@@ -633,12 +584,11 @@ public class PrintSellGvCleranceAccRptAMY extends GenericExcel
       headerCell.setCellValue(strUsrId);
       headerCell.setCellStyle(ReportCriteriaStyle);
     
-      String strPrintedDate = getTranslatedCaptionMsg("Printed Date") + ": ";
       region = new Region(5, (short) 5, 5, (short)5);
       sheet.addMergedRegion(region);
       headerRow = sheet.createRow((short) 5);
       headerCell = headerRow.createCell((short) 5);
-      headerCell.setCellValue(strPrintedDate);
+      headerCell.setCellValue(getTranslatedCaptionMsg("Printed Date") + ": ");
       headerCell.setCellStyle(ReportCriteriaStyle);
 
       region = new Region(5, (short) 6, 5, (short)6);
@@ -949,15 +899,6 @@ public class PrintSellGvCleranceAccRptAMY extends GenericExcel
       else if(strCode.equals("M")){strDesc = "MonthlySelling_";} 
       return strDesc;
    }
-   
-   private void closeStatement()   
-   {
-      try{
-      	if(pstmtDEL!=null) 
-           pstmtDEL.close();
-      }catch(Exception e){}
-      pstmtDEL=null; 
-   } 
 
    public void setTestRun(boolean bln)
    {

@@ -976,6 +976,8 @@
 														if(str[9]==null) str[9]="";
 														if(str[10]==null) str[10]="";
 														if(str[11] == null) str[11]="";
+														if(str[12] == null) str[12]="";
+														if(str[13] == null) str[13]="";
 														
 														if(str[9] != null && !(str[9].equals("")))
 														{
@@ -1008,11 +1010,11 @@
 												<td class="<%=strTdBgColor%>"><input type="text"  name="txtPrcId_<%=i%>" value="<%=str[3]%>" readonly tabindex="-1" class="<%=strInputColor%>"/></td>
 												<td class="<%=strTdBgColor%>"><input type="text"  name="txtSerialNo_<%=i%>" value="<%=str[6]%>" readonly tabindex="-1" class="<%=strInputColor%>"/></td>	
 												<td class="<%=strTdBgColor%>"><input type="text"  name="txtPrcType_<%=i%>" value="<%=prcTypeDesc%>" readonly tabindex="-1" class="<%=strInputColor%>"/></td>
-												<td class="<%=strTdBgColor%>"><input type="text"  name="rptPRC_USER_ID_<%=i%>" value="<%=str[4]%>" readonly tabindex="-1" class="<%=strInputColor%>"/></td>												<!-- For View and Report Printing Parameters -->
+												<td class="<%=strTdBgColor%>"><input type="text"  name="rptPRC_USER_ID_<%=i%>" value="<%=str[12]%>" readonly tabindex="-1" class="<%=strInputColor%>"/></td>												<!-- For View and Report Printing Parameters -->
 												<td class="<%=strTdBgColor%>"><input type="text" name="rptRSN_CD_<%=i%>" value="<%=str[7]%>" readonly tabindex="-1" class="<%=strInputColor%>"/></td>
 												<td class="<%=strTdBgColor%>"><input type="text" name="txtTotAmt_<%=i%>" value="<%=str[11]%>" readonly tabindex="-1" class="<%=strInputColor%>"/></td>
 												<td class="<%=strTdBgColor%>"><input type="text"  name="txtCreateBy_<%=i%>" value="<%=str[4]%>" readonly tabindex="-1" class="<%=strInputColor%>"/></td>
-												<td class="<%=strTdBgColor%>"><input type="text"  name="txtDateUploaded_<%=i%>" value="<%=qrMisc.discardTime(str[5])%>" readonly tabindex="-1" class="<%=strInputColor%>"/></td>
+												<td class="<%=strTdBgColor%>"><input type="text"  name="txtDateUploaded_<%=i%>" value="<%=qrMisc.discardTime(str[13])%>" readonly tabindex="-1" class="<%=strInputColor%>"/></td>
 
 												
 												<input type="hidden" name="rptCOY_<%=i%>"	 		value="<%=str[0]%>"/>

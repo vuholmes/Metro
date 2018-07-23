@@ -178,19 +178,19 @@
 		strPaymentMode = (String)recordMap.get("PAYMENTMODE");
 		if(strPaymentMode.equals("CS"))
 		{
-			strPaymentModeDesc = "CASH";
+			strPaymentModeDesc = jbWResGUI.getRes("CASH");
 		}
 		else if(strPaymentMode.equals("CC"))
 		{
-			strPaymentModeDesc = "CREDIT CARD";
+			strPaymentModeDesc = jbWResGUI.getRes("CREDIT CARD");
 		}
 		else if(strPaymentMode.equals("CH"))
 		{
-			strPaymentModeDesc = "CHEQUE";
+			strPaymentModeDesc = jbWResGUI.getRes("CHEQUE");
 		}
 		else if(strPaymentMode.equals("TT"))
 		{
-			strPaymentModeDesc = "TELEGRAPHIC TRANSFER";
+			strPaymentModeDesc = jbWResGUI.getRes("TELEGRAPHIC TRANSFER");
 		}
 	}
 	if(recordMap.get("RSN_CD")!= null && !recordMap.get("RSN_CD").equals(""))
@@ -342,9 +342,9 @@
 												<td width="20%" class="caption">
 													<%
 														if(strPrcType != null && strPrcType.equals("I")){
-															out.print("Date Issued");
+															out.print(jbWResGUI.getRes("Date Issued"));
 														}else if(strPrcType != null && strPrcType.equals("L")){
-															out.print("Date Cancelled");
+															out.print(jbWResGUI.getRes("Date Cancelled"));
 														}
 													%>
 												</td>
@@ -379,9 +379,9 @@
 												<td width="20%" class="caption">
 													<%
 														if(strPrcType != null && strPrcType.equals("I")){
-															out.print("Created By");
+															out.print(jbWResGUI.getRes("Created By"));
 														}else if(strPrcType != null && strPrcType.equals("L")){
-															out.print("Cancelled By");
+															out.print(jbWResGUI.getRes("Cancelled By"));
 														}
 													%>
 												</td>

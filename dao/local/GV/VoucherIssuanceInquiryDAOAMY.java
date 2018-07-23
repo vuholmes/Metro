@@ -138,7 +138,7 @@ public class VoucherIssuanceInquiryDAOAMY implements QueryBasedPagingDAOHandller
 //           System.out.println ("*** VOUCHER ISSUANCE INQUIRY ***  "+sql_query);
            while (resultSet != null && resultSet.next())
            {
-              String [] str = new String[12];
+              String [] str = new String[14];
               str[0] = resultSet.getString(1);
               str[1] = resultSet.getString(2);
               str[2] = resultSet.getString(3);
@@ -151,7 +151,9 @@ public class VoucherIssuanceInquiryDAOAMY implements QueryBasedPagingDAOHandller
               str[9] = resultSet.getString(10);
               str[10] = resultSet.getString(11);
               str[11] = resultSet.getString(12);
-              
+              str[12] = resultSet.getString(13);
+              str[13] = resultSet.getString(14);
+               
               rsCollection.add(str);
            }
         } // try
@@ -232,6 +234,9 @@ public class VoucherIssuanceInquiryDAOAMY implements QueryBasedPagingDAOHandller
                 returnMap.put("REMARK", resultSet.getString("REMARK"));
             }
             
+            pstmt.close();
+            resultSet.close();
+           
             sql_query = " SELECT SUM(TOT_AMOUNT) AS TOT_AMOUNT, SUM(DISC_AMT) AS TOT_DISCOUNT_AMT " +
                         " FROM GVLOGBOOK " +
                         " WHERE COY = ? " +
