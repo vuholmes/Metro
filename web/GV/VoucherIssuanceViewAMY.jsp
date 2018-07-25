@@ -415,10 +415,10 @@
 											%>
 											</tr>
 											<tr>
-												<td width="20%" class="caption"><%= jbWResGUI.getRes("Total Discount")%></td>
+												<td width="20%" class="caption"><%= jbWResGUI.getRes("Total Discount ")%>(<%=cur_currency%>)</td>
 												<td colspan="2"><input type="text" name="txtTotalDiscount" value="<%=webCurrConverter.format(strTotalDiscount, 2)%>" readonly tabindex="-1" class="input-display"/></td>
 												<td width="5%"></td>
-												<td width="20%" class="caption"><%= jbWResGUI.getRes("Total Amount after Discount")%></td>
+												<td width="20%" class="caption"><%= jbWResGUI.getRes("Total Amount after Discount ")%>(<%=cur_currency%>)</td>
 												<td width="25%"><input type="text" name="txtTotalAmountAfterDiscount" value="<%=webCurrConverter.format(strTotalAmountAfterDiscount, 2)%>" readonly tabindex="-1" class="input-display"/></td>
 												<td width="5%"></td>
 											</tr>
