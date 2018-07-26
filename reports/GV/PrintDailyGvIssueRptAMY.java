@@ -59,8 +59,6 @@ public class PrintDailyGvIssueRptAMY extends GenericExcel
    private String strFrDateIssue = null;
    private String strToDateIssue = null;
    
-   private String strComboStoreList = "";
-   
    protected CurrencyConverter currencyConverter = null;
    protected int lineCodeCount = 0;
    protected HParam hParam_denom = new HParam();
@@ -73,7 +71,6 @@ public class PrintDailyGvIssueRptAMY extends GenericExcel
    private PreparedStatement prepareStmt = null;
    private ResultSet rs = null;
    private CoymstSQL coymstSQL;
-   private CoysubmstSQL coysubmstSQL;
    private ProfitvvSQL profitvvSQL = null;
 
    private String SYSGVCatSell         = ""; 
@@ -125,7 +122,6 @@ public class PrintDailyGvIssueRptAMY extends GenericExcel
    private void initObjSQL() throws SQLException
    {
       coymstSQL      = new CoymstSQL(conn);
-      coysubmstSQL      = new CoysubmstSQL(conn);
       profitvvSQL = new ProfitvvSQL(conn);
    }   
    
@@ -142,25 +138,11 @@ public class PrintDailyGvIssueRptAMY extends GenericExcel
       
       System.out.println("## CATEGORY = " + strGvCategory + " ##");
       
-      String strStoreList[] = strStore.split(",");
-      for(int i=0; i<strStoreList.length; i++)
-      {
-        if(i!=0)
-        {
-          strComboStoreList = strComboStoreList + ",";
-        } 
-        if(strStoreList[i].trim().length()>0)
-        {
-          strComboStoreList = strComboStoreList + "'" + strStoreList[i] + "'";
-        }
-      }
-      
       String strSYSUserLanguage   = getProfitVV("SYSUserLanguage", strCoy);
       String strSYSUserCountry    = getProfitVV("SYSUserCountry", strCoy); 
       String strSYSRoundPlace     = getProfitVV("SYSRoundPlace", strCoy);
       String strSYSRoundMode      = getProfitVV("SYSRoundMode", strCoy);
       String strSYSDecimalDisplay = getProfitVV("SYSDecimalDisplay", strCoy);
-      String strSYSCurrGroupRpt   = getProfitVV("SYSCurrGroupRpt", strCoy);
 
       SYSGVCatSell         = getProfitVV("SYSGVCatSell", strCoy); 
       SYSGVCatPoint        = getProfitVV("SYSGVCatPoint", strCoy);
@@ -174,10 +156,6 @@ public class PrintDailyGvIssueRptAMY extends GenericExcel
       
       coymstSQL.setCOY(strCoy); 
       coymstSQL.getByKey();
-      
-      coysubmstSQL.setCOY(strCoy);
-      coysubmstSQL.setCOY_SUB(strCoySub);
-      coysubmstSQL.getByKey();
       
       // create a new workbook
       workBook = new HSSFWorkbook();
@@ -599,8 +577,7 @@ public class PrintDailyGvIssueRptAMY extends GenericExcel
       sheet.addMergedRegion(region);
       headerRow = sheet.createRow((short) 0);
       headerCell = headerRow.createCell((short) 0);
-//      headerCell.setCellValue("Company: "+ strCoySub + " "  + getDescription(coysubmstSQL.COY_SUB_NAME()));
-      headerCell.setCellValue(getDescription(coysubmstSQL.COY_SUB_NAME()));
+      headerCell.setCellValue(getDescription(coymstSQL.COY_NAME()));
       headerCell.setCellStyle(CompanyTitleStyle);        
    
       region = new Region(2, (short) 0, 2, (short)4);

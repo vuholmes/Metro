@@ -17,10 +17,12 @@
     WResGUI jbWResGUI 					= jbWebSessionParam.getWResGUI(request);
 	WResPrompt jbWResPrompt 			= jbWebSessionParam.getWResPrompt(request);
 	WebAuthorization webAuth 			= new WebAuthorization(request);
-	AduserInfo aduserInfo				= (AduserInfo)request.getSession().getAttribute("aduserInfo");
 	CoysubmstComboBox coysubmstComboBox = new CoysubmstComboBox(request);
-	DefaultStore defaultStore			= new DefaultStore(aduserInfo);
-	
+	MultiStoreDAO  multiStoreDAO        = new MultiStoreDAO();
+    AduserInfo aduserInfo = (AduserInfo)jbWebSessionParam.getAduserInfo();
+    DefaultCoySub defaultCoySub= new DefaultCoySub(aduserInfo);
+    String defaultCoysub = defaultCoySub.getDEFAULT_COY_SUB();
+
 	String BaseURL 				= SysParam.getInstance().getBaseURL();
 	String lang_code 			= jbWebSessionParam.getAduserInfo().USR_LANGUAGE();
 	String user_id 				= jbWebSessionParam.getAduserInfo().USR_ID();
@@ -51,9 +53,11 @@
         strGvType = "";
         strStore = "";
         strGvDeno = "";
+
         jbSession.removeAttribute("TIME_CD");
         TIME_CD = String.valueOf(System.currentTimeMillis());
         jbSession.setAttribute("TIME_CD", TIME_CD);
+        multiStoreDAO.clearWorkmstJSPGlobal(request.getSession().getId(), TIME_CD, tableName);
     }
     else {
         TIME_CD = (String) jbSession.getAttribute("TIME_CD");
@@ -64,7 +68,7 @@
     if(vctStore == null){
         vctStore = new Vector();
         jbSession.setAttribute("vctStore", vctStore);
-    } 
+    }
     if(strAction.equals("selectedStores")||strAction.equals("selectAllStore")) {
         String tmp  = "";
         String tmp2 = "";
@@ -92,6 +96,9 @@
             }      
         }  
         strReturnStores    = "Y";      
+   }
+   if (strCoySub == null) {
+       strCoySub = defaultCoysub;
    }
 %>
 

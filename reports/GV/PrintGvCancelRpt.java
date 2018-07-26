@@ -57,7 +57,6 @@ public class PrintGvCancelRpt extends GenericExcel {
     private PreparedStatement prepareStmt = null;
     private ResultSet rs = null;
     private CoymstSQL coymstSQL;
-    private CoysubmstSQL coysubmstSQL;
     private ProfitvvSQL profitvvSQL = null;
     private AduserSQL aduserSQL = null;
     
@@ -100,7 +99,6 @@ public class PrintGvCancelRpt extends GenericExcel {
     private void initObjSQL() throws SQLException
     {
        coymstSQL        = new CoymstSQL(conn);
-       coysubmstSQL     = new CoysubmstSQL(conn);
        profitvvSQL      = new ProfitvvSQL(conn);
        aduserSQL        = new AduserSQL(conn);
     }   
@@ -129,10 +127,6 @@ public class PrintGvCancelRpt extends GenericExcel {
        
        coymstSQL.setCOY(strCoy); 
        coymstSQL.getByKey();
-       
-       coysubmstSQL.setCOY(strCoy);
-       coysubmstSQL.setCOY_SUB(strCoySub);
-       coysubmstSQL.getByKey();
        
        // create a new workbook
        workBook = new HSSFWorkbook();
@@ -285,7 +279,7 @@ public class PrintGvCancelRpt extends GenericExcel {
      String separator = "<:>";
      
      StringBuilder queryBuilder = new StringBuilder();
-     queryBuilder.append("SELECT GV.GV_NO, (GT.GV_TYPE||' - '||GETDESC(" + lang + ", GD.GV_DENO_DESC, '" +
+     queryBuilder.append("SELECT GV.GV_NO, (GT.GV_TYPE||' - '||GETDESC(" + lang + ", GP.GV_TYPE_DESC, '" +
                             separator + "')) AS GV_TYPE, ");
      queryBuilder.append("(GT.GV_DENOMINATION||' - '||GETDESC(" + lang + ", GD.GV_DENO_DESC, '" +
                             separator + "')) AS GV_DENOMINATION, ");
@@ -465,7 +459,7 @@ public class PrintGvCancelRpt extends GenericExcel {
        sheet.addMergedRegion(region);
        headerRow = sheet.createRow((short) 0);
        headerCell = headerRow.createCell((short) 0);
-       headerCell.setCellValue(getDescription(coysubmstSQL.COY_SUB_NAME()));
+       headerCell.setCellValue(getDescription(coymstSQL.COY_NAME()));
        headerCell.setCellStyle(CompanyTitleStyle);        
     
        region = new Region(2, (short) 0, 2, (short)4);
