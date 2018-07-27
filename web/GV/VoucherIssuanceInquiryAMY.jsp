@@ -13,6 +13,7 @@
 
 <jsp:useBean id="jbSession" scope="session" class="qrcom.PROFIT.servlet.HTTPSessionAttributeWrapper" />
 <jsp:useBean id="jbWebSessionParam" scope="session" class="qrcom.PROFIT.webbean.HTTPObj.WebSessionParam" />
+<jsp:useBean id="webCurrConverter" scope="session" class="qrcom.util.CurrencyConverter" />
 
 <%
 	WResGUI jbWResGUI 					= jbWebSessionParam.getWResGUI(request);
@@ -268,7 +269,7 @@
 	hParam.put("USER_ID", user_id);
 	hParam.put("COY", strCoy);
 	hParam.put("USR_LANGUAGE", lang_code);
-	
+
 	Collection err = (Collection)request.getSession().getAttribute("errorSets");
     if (err != null && !err.isEmpty())
     {
@@ -888,7 +889,7 @@
 												<td width="10%" class="tb-display"><%=jbWResGUI.getRes("Process Type")%></td>
 												<td width="10%" class="tb-display"><%=jbWResGUI.getRes("Purchaser")%></td>
 												<td width="10%" class="tb-display"><%=jbWResGUI.getRes("Reason Code")%></td>
-												<td width="10%" class="tb-display"><%=jbWResGUI.getRes("Total Amount")%></td>
+												<td width="10%" class="tb-display"><%=jbWResGUI.getRes("Total Amount ")%>(<%=jbWResGUI.getRes("RM")%>)</td>
 												<td width="10%" class="tb-display"><%=jbWResGUI.getRes("Created By")%></td>
 												<td width="12%" class="tb-display"><%=jbWResGUI.getRes("Date Issued")%></td>			
 											</tr>
@@ -1012,7 +1013,7 @@
 												<td class="<%=strTdBgColor%>"><input type="text"  name="txtPrcType_<%=i%>" value="<%=prcTypeDesc%>" readonly tabindex="-1" class="<%=strInputColor%>"/></td>
 												<td class="<%=strTdBgColor%>"><input type="text"  name="rptPRC_USER_ID_<%=i%>" value="<%=str[12]%>" readonly tabindex="-1" class="<%=strInputColor%>"/></td>												<!-- For View and Report Printing Parameters -->
 												<td class="<%=strTdBgColor%>"><input type="text" name="rptRSN_CD_<%=i%>" value="<%=str[7]%>" readonly tabindex="-1" class="<%=strInputColor%>"/></td>
-												<td class="<%=strTdBgColor%>"><input type="text" name="txtTotAmt_<%=i%>" value="<%=str[11]%>" readonly tabindex="-1" class="<%=strInputColor%>"/></td>
+												<td class="<%=strTdBgColor%>"><input type="text" name="txtTotAmt_<%=i%>" value="<%=webCurrConverter.format(str[11], 2)%>" readonly tabindex="-1" class="<%=strInputColor%>" style="text-align:right"/></td>
 												<td class="<%=strTdBgColor%>"><input type="text"  name="txtCreateBy_<%=i%>" value="<%=str[4]%>" readonly tabindex="-1" class="<%=strInputColor%>"/></td>
 												<td class="<%=strTdBgColor%>"><input type="text"  name="txtDateUploaded_<%=i%>" value="<%=qrMisc.discardTime(str[13])%>" readonly tabindex="-1" class="<%=strInputColor%>"/></td>
 

@@ -1752,9 +1752,13 @@
          if (resultMap.get("CONTACT_NO") != null && !((String) resultMap.get("CONTACT_NO")).equals("")) {
              strContactNo = getDescription((String) resultMap.get("CONTACT_NO"));
          }
+         
+         double totalAmount = Double.parseDouble((String) resultMap.get("TOTAL_AMOUNT"));
+         double totalDiscountAmount = Double.parseDouble((String) resultMap.get("TOTAL_DISCOUNT_AMOUNT"));
+             
          if (resultMap.get("TOTAL_AMOUNT") != null && !((String) resultMap.get("TOTAL_AMOUNT")).equals("")) {
              strTotalAmount =
-                 adlangmstSQL.getTranslatedCaptionMsg(USER_LANGUAGE, "RM") + " " + new DecimalFormat("#0.00").format(Double.parseDouble((String) resultMap.get("TOTAL_AMOUNT")));
+                 adlangmstSQL.getTranslatedCaptionMsg(USER_LANGUAGE, "RM") + " " + new DecimalFormat("#0.00").format(totalAmount - totalDiscountAmount);
          }
          if (resultMap.get("ISSUE_TYPE") != null && !((String) resultMap.get("ISSUE_TYPE")).equals("")) {
              strIssueType = getDescription((String) resultMap.get("ISSUE_TYPE"));

@@ -253,12 +253,12 @@
                 var bValid = true;
                 
                 if (objDateFr.value !== '' && objDateTo.value === '') {
-                    alert('<%=jbWResPrompt.getRes("TO")%> <%=jbWResPrompt.getRes("Date Cancelled")%> <%=jbWResPrompt.getRes("must be entered")%>');
+                    alert('<%=jbWResPrompt.getRes("TO_FROM_FIELD_MUST_ENTER")%> ');
                     objDateTo.focus();
                     bValid = false;
                 }
                 else if (objDateFr.value === '' && objDateTo.value !== '') {
-                    alert('<%=jbWResPrompt.getRes("FROM")%> <%=jbWResPrompt.getRes("Date Cancelled")%> <%=jbWResPrompt.getRes("must be entered")%>');
+                    alert('<%=jbWResPrompt.getRes("TO_FROM_FIELD_MUST_ENTER")%> ');
                     objDateFr.focus();
                     bValid = false;
                 }
@@ -345,8 +345,8 @@
                                 <tr>
                                     <td width="20%" class="caption"><%=jbWResGUI.getRes("Voucher Type")%></td>
                                     <td colspan="2">
-                                        <select name="cboGvType" onchange="onChgVoucherType();">
-                                            <%=MTComboBox.Default(lang_code, strGvType, "GVTYPEMST.GV_TYPE", "GVTYPEMST.GV_TYPE_DESC", "GVTYPEMST", "ORDER BY GVTYPEMST.GV_TYPE ")%>       	  
+                                        <select name="cboGvType" class="mandatory" onchange="onChgVoucherType();" >
+                                            <%=MTComboBox.Default(lang_code, strGvType, "GVTYPEMST.GV_TYPE", "GVTYPEMST.GV_TYPE_DESC", "GVTYPEMST", "WHERE COY = '"+strCoy+"' AND COY_SUB = '"+strCoySub+"' ORDER BY GVTYPEMST.GV_TYPE ")%>       	  
                                         </select>
                                     </td>
                                     <td width="5%"></td>
@@ -360,13 +360,13 @@
                                 </tr>
                                 <tr>
                                     <td width="20%" class="caption"><%= jbWResGUI.getRes("Voucher Cancellation From Date")%></td>
-                                    <td colspan="2"><input type="text" name="txtFromDateCancelled"  value="<%=strFromDateCancelled%>" onblur="this.value=formatDate(this.value); onBlurValidateDate();"  maxlength="10" class="mandatory" ></td>
+                                    <td colspan="2"><input type="text" name="txtFromDateCancelled"  value="<%=strFromDateCancelled%>" onblur="this.value=formatDate(this.value); onBlurValidateDate();"  maxlength="10" ></td>
                                     <td width="5%"><img src="<%=BaseURL%>/profit/images/calendr.gif" ALT="<%=jbWResGUI.getRes("Calendar")%>" onclick=newWindow(1) style='cursor:hand'></td>
                                     <td></td>
                                 </tr>
                                 <tr>
                                     <td width="20%" class="caption"><%= jbWResGUI.getRes("Voucher Cancellation To Date")%></td>
-                                    <td colspan="2"><input type="text" name="txtToDateCancelled"  value="<%=strToDateCancelled%>" onblur="this.value=formatDate(this.value); onBlurValidateDate();"  maxlength="10" class="mandatory" ></td>
+                                    <td colspan="2"><input type="text" name="txtToDateCancelled"  value="<%=strToDateCancelled%>" onblur="this.value=formatDate(this.value); onBlurValidateDate();"  maxlength="10" ></td>
                                     <td width="5%"><img src="<%=BaseURL%>/profit/images/calendr.gif" ALT="<%=jbWResGUI.getRes("Calendar")%>" onclick=newWindow(2) style='cursor:hand'></td>
                                     <td></td>
                                 </tr>

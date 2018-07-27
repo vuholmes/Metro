@@ -10,7 +10,6 @@
 <%@ page import = "qrcom.PROFIT.webbean.HTTPObj.*" %>
 <%@ page import = "qrcom.PROFIT.webbean.language.*" %>
 <%@ page import = "qrcom.PROFIT.system.*"%>
-<%@ page import = "qrcom.PROFIT.files.info.CoysubmstSQL" %>
 <%@ page import="java.util.StringTokenizer"%>
 
 <jsp:useBean id="jbSession" scope="session" class="qrcom.PROFIT.servlet.HTTPSessionAttributeWrapper" />
@@ -139,13 +138,6 @@
 	hParam.put("USR_ID", user_id);
 	hParam.put("COY", strCoy);
 	hParam.put("USR_LANGUAGE", lang_code);
-	
-	CoysubmstSQL coysubmstSQL = new CoysubmstSQL();
-	coysubmstSQL.setCOY(strCoy);
-	coysubmstSQL.setCOY_SUB(strCoySub);
-	coysubmstSQL.getByKey();
-	
-	String cur_currency = coysubmstSQL.FRGN_CRNCY_CD();
 
 	Map recordMap = (HashMap)jbSession.getAttribute("recordMap");
 	
@@ -387,7 +379,7 @@
 												</td>
 												<td colspan="2"><input type="text" name="txtCreateBy" value="<%=strCreateBy%>" readonly tabindex="-1" class="input-display"/></td>
 												<td width="5%"></td>
-												<td width="20%" class="caption"><%= jbWResGUI.getRes("Total Amount ")%>(<%=cur_currency%>)</td>
+												<td width="20%" class="caption"><%= jbWResGUI.getRes("Total Amount ")%>(<%=jbWResGUI.getRes("RM")%>)</td>
 												<td width="25%"><input type="text" name="txtTotalAmount" value="<%=webCurrConverter.format(strTotalAmount, 2)%>" readonly tabindex="-1" class="input-display"/></td>
 												<td width="5%"></td>
 											</tr>
@@ -415,10 +407,10 @@
 											%>
 											</tr>
 											<tr>
-												<td width="20%" class="caption"><%= jbWResGUI.getRes("Total Discount ")%>(<%=cur_currency%>)</td>
+												<td width="20%" class="caption"><%= jbWResGUI.getRes("Total Discount ")%>(<%=jbWResGUI.getRes("RM")%>)</td>
 												<td colspan="2"><input type="text" name="txtTotalDiscount" value="<%=webCurrConverter.format(strTotalDiscount, 2)%>" readonly tabindex="-1" class="input-display"/></td>
 												<td width="5%"></td>
-												<td width="20%" class="caption"><%= jbWResGUI.getRes("Total Amount after Discount ")%>(<%=cur_currency%>)</td>
+												<td width="20%" class="caption"><%= jbWResGUI.getRes("Total Amount after Discount ")%>(<%=jbWResGUI.getRes("RM")%>)</td>
 												<td width="25%"><input type="text" name="txtTotalAmountAfterDiscount" value="<%=webCurrConverter.format(strTotalAmountAfterDiscount, 2)%>" readonly tabindex="-1" class="input-display"/></td>
 												<td width="5%"></td>
 											</tr>
@@ -476,7 +468,7 @@
 														<td width="5%" class="tb-display" align="left"><%=jbWResGUI.getRes("Points")%></td>
 														<td width="6%" class="tb-display" align="left"><%=jbWResGUI.getRes("Total Points")%></td>
 														<td width="5%" class="tb-display" align="left"><%=jbWResGUI.getRes("Quantity (PCS)")%></td>
-														<td width="8%" class="tb-display" align="left"><%=jbWResGUI.getRes("Total Amount ")%>(<%=cur_currency%>)</td>
+														<td width="8%" class="tb-display" align="left"><%=jbWResGUI.getRes("Total Amount ")%>(<%=jbWResGUI.getRes("RM")%>)</td>
 													<tr>
 													<%		
 														if (strAction != null && strAction.equals("search"))
