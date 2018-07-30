@@ -51,7 +51,7 @@
 		strMode = "tab1";
 	}
 	
-	String strPurchaser			= "";
+	String strProgramType			= "";
 	String strContactNo			= "";
 	String strNRIC				= "";
 	String strCollector			= "";
@@ -147,7 +147,7 @@
 	}
 	if(recordMap.get("PCH_NAME")!= null && !recordMap.get("PCH_NAME").equals(""))
 	{
-		strPurchaser = (String)recordMap.get("PCH_NAME");
+		strProgramType = (String)recordMap.get("PCH_NAME");
 	}
 	if(recordMap.get("TRANS_DATE")!= null && !recordMap.get("TRANS_DATE").equals(""))
 	{
@@ -328,8 +328,8 @@
 												<td width="5%"></td>
 											</tr>
 											<tr>
-												<td width="20%" class="caption"><%= jbWResGUI.getRes("Purchaser/Member")%></td>
-												<td colspan="2"><input type="text" name="txtPurchaser" value="<%=strPurchaser%>" readonly tabindex="-1" class="input-display"/></td>
+												<td width="20%" class="caption"><%= jbWResGUI.getRes("Reason Code")%></td>
+												<td colspan="2"><input type="text" name="txtRsnCd" value="<%=strRsnCd%>" readonly tabindex="-1" class="input-display"/></td>
 												<td width="5%"></td>
 												<td width="20%" class="caption">
 													<%
@@ -347,21 +347,21 @@
 												<td width="20%" class="caption"><%= jbWResGUI.getRes("Contact No")%></td>
 												<td colspan="2"><input type="text" name="txtContactNo" value="<%=strContactNo%>" readonly tabindex="-1" class="input-display"/></td>
 												<td width="5%"></td>
-												<td width="20%" class="caption"><%= jbWResGUI.getRes("NRIC")%></td>
-												<td width="25%"><input type="text" name="txtNRIC" value="<%=strNRIC%>" readonly tabindex="-1" class="input-display"/></td>
+												<td width="20%" class="caption"><%= jbWResGUI.getRes("Reference 1")%></td>
+												<td colspan="25%"><input type="text" name="txtCollector" value="<%=strCollector%>" readonly tabindex="-1" class="input-display"/></td>
 												<td width="5%"></td>
 											</tr>
 											<tr>
-												<td width="20%" class="caption"><%= jbWResGUI.getRes("Collector")%></td>
-												<td colspan="2"><input type="text" name="txtCollector" value="<%=strCollector%>" readonly tabindex="-1" class="input-display"/></td>
+												<td width="20%" class="caption"><%= jbWResGUI.getRes("Reference 2")%></td>
+												<td colspan="2"><input type="text" name="txtNRIC" value="<%=strNRIC%>" readonly tabindex="-1" class="input-display"/></td>
 												<td width="5%"></td>
 												<td width="20%" class="caption"><%= jbWResGUI.getRes("Payment Mode")%></td>
 												<td width="25%"><input type="text" name="txtPaymentMode" value="<%=strPaymentModeDesc%>" readonly tabindex="-1" class="input-display"/></td>
 												<td width="5%"></td>
 											</tr>
 											<tr>
-												<td width="20%" class="caption"><%= jbWResGUI.getRes("Reason Code")%></td>
-												<td colspan="2"><input type="text" name="txtRsnCd" value="<%=strRsnCd%>" readonly tabindex="-1" class="input-display"/></td>
+												<td width="20%" class="caption"><%= jbWResGUI.getRes("Program Type")%></td>
+												<td colspan="2"><input type="text" name="txtPurchaser" value="<%=strProgramType%>" readonly tabindex="-1" class="input-display"/></td>
 												<td width="5%"></td>
 												<td width="20%" class="caption"><%= jbWResGUI.getRes("Date Created")%></td>
 												<td width="25%"><input type="text" name="txtDateCreate" value="<%=qrMisc.discardTime(strPrcDate)%>" readonly tabindex="-1" class="input-display"/></td>
@@ -464,7 +464,7 @@
 														<td width="4%" class="tb-display" align="left"><%=jbWResGUI.getRes("Box No")%></td>
 														<td width="6%" class="tb-display" align="left"><%=jbWResGUI.getRes("Box Type")%></td>
 														<td width="4%" class="tb-display" align="left"><%=jbWResGUI.getRes("Book No")%></td>
-														<td width="11%" class="tb-display" align="left"><%=jbWResGUI.getRes("Remark")%></td>
+														<td width="11%" class="tb-display" align="left"><%=jbWResGUI.getRes("Receipt No")%></td>
 														<td width="5%" class="tb-display" align="left"><%=jbWResGUI.getRes("Points")%></td>
 														<td width="6%" class="tb-display" align="left"><%=jbWResGUI.getRes("Total Points")%></td>
 														<td width="5%" class="tb-display" align="left"><%=jbWResGUI.getRes("Quantity (PCS)")%></td>

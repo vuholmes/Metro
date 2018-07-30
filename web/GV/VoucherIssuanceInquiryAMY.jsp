@@ -54,7 +54,7 @@
 	String strSerialNo			= request.getParameter("KEY5");
 	String strGvDeno			= request.getParameter("KEY6");
 	String strGVNo				= request.getParameter("KEY7");
-	String strPurchaser			= request.getParameter("KEY8");
+	String strProgramType			= request.getParameter("KEY8");
 	String strContactNo			= request.getParameter("KEY9");
 	String strRsnCd				= request.getParameter("KEY10");
 	String strDateIssue			= request.getParameter("KEY11");
@@ -101,9 +101,9 @@
 				strGVNo = request.getParameter( "txtGVNo" );
 			}
 		}
-		if(request.getParameter("txtPurchaser")!=null && !request.getParameter("txtPurchaser").equals(""))
+		if(request.getParameter("cboProgramType")!=null && !request.getParameter("cboProgramType").equals(""))
 		{
-			strPurchaser = request.getParameter("txtPurchaser");
+			strProgramType = request.getParameter("cboProgramType");
 		}
 		if(request.getParameter("txtContactNo")!=null && !request.getParameter("txtContactNo").equals(""))
 		{
@@ -225,10 +225,10 @@
 	}else{
 		strGVNo = "";
 	}
-	if(strPurchaser != null){
-		hParam.put("PCH_NAME", strPurchaser);
+	if(strProgramType != null){
+		hParam.put("PCH_NAME", strProgramType);
 	}else{
-		strPurchaser = "";
+		strProgramType = "";
 	}
 	if(strContactNo != null){
 		hParam.put("PCH_CONTACT_NO", strContactNo);
@@ -300,7 +300,7 @@
 					ACTION += '&PAGE=' + window.document.FORM.txtGotoPage.value;
 				}
 				window.document.FORM.PRINT_FLAG.value = 'N';
-				window.document.FORM_SUBMIT.action = buildActionURL('FORM', URLstr, ACTION, 'cboSubCoy%txtStore%txtPrcId%cboGvType%txtSerialNo%cboGvDeno%txtGVNo%txtPurchaser%txtContactNo%cboRsnCd%txtDateIssue%txtCreateBy%txtDateCreate%cboProcessType%strMembershipNo');
+				window.document.FORM_SUBMIT.action = buildActionURL('FORM', URLstr, ACTION, 'cboSubCoy%txtStore%txtPrcId%cboGvType%txtSerialNo%cboGvDeno%txtGVNo%cboProgramType%txtContactNo%cboRsnCd%txtDateIssue%txtCreateBy%txtDateCreate%cboProcessType%strMembershipNo');
 				window.document.FORM_SUBMIT.submit();
 			}
 			
@@ -438,8 +438,6 @@
 			function onChgVouchType()
 			{
 				'use strict';
-				var voucherType = window.document.FORM.cboGvType.value;
-				
 				var url = '<%=BaseURL%>/profit/GV/VoucherIssuanceInquiryAMY.jsp';
 				window.document.FORM.action = url;
 				window.document.FORM.PRINT_FLAG.value = 'N';
@@ -815,18 +813,22 @@
 															<td width="5%"><img src="<%=BaseURL%>/profit/images/search.gif" alt="<%=jbWResGUI.getRes("Find")%>" style="cursor:hand" onclick="SearchCriteria('<%=BaseURL%>/profit/GV/VoucherSearchAMY.jsp', 'txtGVNo')" style='cursor:hand;'></td>
 														</tr>
 														<tr>
-															<td width="20%" class="caption"><%=jbWResGUI.getRes("Purchaser/Member")%></td>
-															<td colspan="2"><input type="text" name="txtPurchaser" value="<%=strPurchaser%>" maxlength="<%=SYSNameLength%>"/></td>
+															<td width="20%" class="caption"><%=jbWResGUI.getRes("Reason Code")%></td>
+															<td colspan="2">
+																<select name="cboRsnCd" onblur="onchgRsnCd('cboRsnCd')" onchange="onChgVouchType();"> 
+																	<%=MTComboBox.Default(lang_code, strRsnCd, "RSN_CD", "RSN_DESC", "DEL_CD", "GVRSNMST", "WHERE COY='"+strCoy+"' AND COY_SUB='"+strCoySub+"' AND GV_TYPE='"+strGvType+"'")%>
+																</select>
+															</td>
 															<td width="5%"></td>
 															<td width="20%" class="caption"><%=jbWResGUI.getRes("Contact No")%></td>
 															<td width="25%"><input type="text" name="txtContactNo" value="<%=strContactNo%>" maxlength="<%=SYSTelNoLength%>"/></td>
 															<td width="5%"></td>
 														</tr>
 														<tr>
-															<td width="20%" class="caption"><%=jbWResGUI.getRes("Reason Code")%></td>
+															<td width="20%" class="caption"><%=jbWResGUI.getRes("Program Type")%></td>
 															<td colspan="2">
-																<select name="cboRsnCd" onblur="onchgRsnCd('cboRsnCd')"> 
-																	<%=MTComboBox.Default(lang_code, strRsnCd, "RSN_CD", "RSN_DESC", "DEL_CD", "GVRSNMST", "WHERE COY='"+strCoy+"' AND COY_SUB='"+strCoySub+"' AND GV_TYPE='"+strGvType+"'")%>
+																<select name="cboProgramType" > 
+																	<%=MTComboBox.Default(lang_code, strProgramType, "PROG_CD", "PROG_DESC", "GVPROGTYPMST", "WHERE COY='"+strCoy+"' AND COY_SUB='"+strCoySub+"' AND GV_TYPE='"+strGvType+"' AND RSN_CD = '"+strRsnCd+"' ORDER BY PROG_CD" )%>
 																</select>
 															</td>
 															<td width="5%"></td>
@@ -863,7 +865,7 @@
 													<tr>
 														<td width="70%"></td>
 														<td width="15%" align="right"><input type="reset" name="cmdReset" value="<%=jbWResGUI.getRes("Reset")%>" onclick="setFormReset(this.form,'<%=BaseURL%>/profit/GV/VoucherIssuanceInquiryAMY.jsp','')"/></td> 
-														<td width="15%"><input type="button" name="cmdSearch" value="<%=jbWResGUI.getRes("Search")%>" onclick="if(Validate(this.form,'search','','Y')) {disableAllButton(); setFormSubmit('<%=BaseURL%>/profit/GV/VoucherIssuanceInquiryAMY.jsp','S','cboSubCoy%txtStore%txtPrcId%cboGvType%txtSerialNo%cboGvDeno%txtGVNo%txtPurchaser%txtContactNo%cboRsnCd%txtDateIssue%txtCreateBy%txtDateCreate%cboProcessType%txtMembershipNo%POPUP');}"/></td>  
+														<td width="15%"><input type="button" name="cmdSearch" value="<%=jbWResGUI.getRes("Search")%>" onclick="if(Validate(this.form,'search','','Y')) {disableAllButton(); setFormSubmit('<%=BaseURL%>/profit/GV/VoucherIssuanceInquiryAMY.jsp','S','cboSubCoy%txtStore%txtPrcId%cboGvType%txtSerialNo%cboGvDeno%txtGVNo%cboProgramType%txtContactNo%cboRsnCd%txtDateIssue%txtCreateBy%txtDateCreate%cboProcessType%txtMembershipNo%POPUP');}"/></td>  
 													</tr>
 												</table>
 											</tr>
@@ -887,7 +889,7 @@
 												<td width="13%" class="tb-display"><%=jbWResGUI.getRes("Transaction No")%></td>
 												<td width="10%" class="tb-display"><%=jbWResGUI.getRes("Serial No")%></td>
 												<td width="10%" class="tb-display"><%=jbWResGUI.getRes("Process Type")%></td>
-												<td width="10%" class="tb-display"><%=jbWResGUI.getRes("Purchaser")%></td>
+												<td width="10%" class="tb-display"><%=jbWResGUI.getRes("Program Type")%></td>
 												<td width="10%" class="tb-display"><%=jbWResGUI.getRes("Reason Code")%></td>
 												<td width="10%" class="tb-display"><%=jbWResGUI.getRes("Total Amount ")%>(<%=jbWResGUI.getRes("RM")%>)</td>
 												<td width="10%" class="tb-display"><%=jbWResGUI.getRes("Created By")%></td>
