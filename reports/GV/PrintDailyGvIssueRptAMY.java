@@ -526,7 +526,7 @@ public class PrintDailyGvIssueRptAMY extends GenericExcel
       setRegionMethod();
       headerRow = sheet.createRow((short) headerRowStart);
       headerCell = headerRow.createCell((short) k);
-      headerCell.setCellValue(getTranslatedCaptionMsg("Customer Name")); 
+      headerCell.setCellValue(getTranslatedCaptionMsg("Program Type")); 
       headerCell.setCellStyle(headerstyle); 
 
       k++;
@@ -535,7 +535,7 @@ public class PrintDailyGvIssueRptAMY extends GenericExcel
       setRegionMethod();
       headerRow = sheet.createRow((short) headerRowStart);
       headerCell = headerRow.createCell((short) k);
-      headerCell.setCellValue(getTranslatedCaptionMsg("Collector")); 
+      headerCell.setCellValue(getTranslatedCaptionMsg("Reference 1")); 
       headerCell.setCellStyle(headerstyle); 
 
       k++;
@@ -544,7 +544,7 @@ public class PrintDailyGvIssueRptAMY extends GenericExcel
       setRegionMethod();
       headerRow = sheet.createRow((short) headerRowStart);
       headerCell = headerRow.createCell((short) k);
-      headerCell.setCellValue(getTranslatedCaptionMsg("NRIC")); 
+      headerCell.setCellValue(getTranslatedCaptionMsg("Reference 2")); 
       headerCell.setCellStyle(headerstyle); 
 
       k++;
