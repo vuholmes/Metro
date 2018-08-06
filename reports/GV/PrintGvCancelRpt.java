@@ -5,6 +5,9 @@ import java.io.*;
 import java.sql.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+
+import java.text.DecimalFormat;
+
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.text.Format;
@@ -37,12 +40,15 @@ public class PrintGvCancelRpt extends GenericExcel {
     
     private static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
     
+    private String SYSCompanyName = "";
     private String strUsrId           = null;
     private String strCoy = null;
     private String strCoySub = null;
     private String strStore = null;
     private String strGvType = null;
+    private String strGvTypeDesc = null;
     private String strGvDenomination = null;
+    private String strGvDenominationDesc = null;
     private String strFrDateCancel = null;
     private String strToDateCancel = null;
     
@@ -56,9 +62,10 @@ public class PrintGvCancelRpt extends GenericExcel {
     
     private PreparedStatement prepareStmt = null;
     private ResultSet rs = null;
-    private CoymstSQL coymstSQL;
     private ProfitvvSQL profitvvSQL = null;
     private AduserSQL aduserSQL = null;
+    private GvtypemstSQLAMY gvtypemstSQLAMY;
+    private GvdenomstSQLAMY gvdenomstSQLAMY;
     
     private HSSFSheet sheet                      = null;
     private HSSFWorkbook workBook                = null;
@@ -78,11 +85,11 @@ public class PrintGvCancelRpt extends GenericExcel {
     
     private Date date = new Date();
     
-    private SimpleDateFormat reportGenTime = new SimpleDateFormat("dd-MMM-yyyy");
+    private SimpleDateFormat reportGenTime = new SimpleDateFormat("yyyy-MM-dd");
     private Format formatter1 = new SimpleDateFormat("kk:mm");
     private String printdate = reportGenTime.format(date).toUpperCase(); 
     private String printtime = formatter1.format(date);
-    
+    private DecimalFormat decimalFormat = new DecimalFormat("#0.00");
     public PrintGvCancelRpt() {}
     
     public PrintGvCancelRpt(String file_name)
@@ -98,9 +105,10 @@ public class PrintGvCancelRpt extends GenericExcel {
     
     private void initObjSQL() throws SQLException
     {
-       coymstSQL        = new CoymstSQL(conn);
        profitvvSQL      = new ProfitvvSQL(conn);
        aduserSQL        = new AduserSQL(conn);
+       gvtypemstSQLAMY  = new GvtypemstSQLAMY(conn);
+       gvdenomstSQLAMY  = new GvdenomstSQLAMY(conn);
     }   
     
     private void jInit(HParam hParam) throws Exception
@@ -114,6 +122,7 @@ public class PrintGvCancelRpt extends GenericExcel {
        strFrDateCancel = hParam.getString("FR_DATE_CANCELLED");
        strToDateCancel = hParam.getString("TO_DATE_CANCELLED");
        
+       SYSCompanyName              = getProfitVV("SYSCompanyName", strCoy);
        String strSYSUserLanguage   = getProfitVV("SYSUserLanguage", strCoy);
        String strSYSUserCountry    = getProfitVV("SYSUserCountry", strCoy); 
        String strSYSRoundPlace     = getProfitVV("SYSRoundPlace", strCoy);
@@ -125,9 +134,6 @@ public class PrintGvCancelRpt extends GenericExcel {
        currencyConverter = new CurrencyConverter(strSYSUserLanguage, strSYSUserCountry, Integer.parseInt(strSYSRoundPlace), Integer.parseInt(strSYSRoundMode), Integer.parseInt(strSYSDecimalDisplay));
        currencyConverter.setGrouping(false);
        
-       coymstSQL.setCOY(strCoy); 
-       coymstSQL.getByKey();
-       
        // create a new workbook
        workBook = new HSSFWorkbook();
        setAduser(strUsrId);
@@ -137,7 +143,37 @@ public class PrintGvCancelRpt extends GenericExcel {
        if (lang == null || lang.trim().length() == 0) {
            lang = "0";
        }
-    }   
+       
+       if(strGvType != null && strGvType.length() > 0) {
+           strGvTypeDesc = getGvTypeDesc(strCoy, strCoySub, strGvType);
+       }
+       if(strGvDenomination != null && strGvDenomination.length() > 0) {
+           strGvDenominationDesc = getGvDenoDesc(strCoy, strCoySub, strGvType, strGvDenomination);
+       }
+    }
+    
+    private String getGvTypeDesc(String coy, String coy_sub, String voucher_type) throws Exception {
+        gvtypemstSQLAMY.setCOY(coy);
+        gvtypemstSQLAMY.setCOY_SUB(coy_sub);
+        gvtypemstSQLAMY.setGV_TYPE(voucher_type);
+
+        if (gvtypemstSQLAMY.getByKey() == 0)
+            throw (new Exception("Voucher Type Does not Exist"));
+
+        return (AltDescUtil.getDesc(USER_LANGUAGE, gvtypemstSQLAMY.GV_TYPE_DESC()));
+    }
+
+    private String getGvDenoDesc(String coy, String coy_sub, String voucher_type,
+                                 String denomination) throws Exception {
+        gvdenomstSQLAMY.setCOY(coy);
+        gvdenomstSQLAMY.setCOY_SUB(coy_sub);
+        gvdenomstSQLAMY.setGV_TYPE(voucher_type);
+        gvdenomstSQLAMY.setGV_DENOMINATION(denomination);
+        if (gvdenomstSQLAMY.getByKey() == 0)
+            throw (new Exception("Voucher Deno Does not Exist"));
+
+        return (AltDescUtil.getDesc(USER_LANGUAGE, gvdenomstSQLAMY.GV_DENO_DESC()));
+    }
     
     public String getProfitVV(String vnm, String coy) throws SQLException
     {
@@ -317,6 +353,7 @@ public class PrintGvCancelRpt extends GenericExcel {
      if(!strFrDateCancel.equals("") && !strToDateCancel.equals("")) {
          queryBuilder.append("\n AND GT.TRANS_DATE BETWEEN TO_DATE('"+strFrDateCancel+"','YYYY-MM-DD') AND TO_DATE('"+strToDateCancel+"','YYYY-MM-DD') ");
      }
+     queryBuilder.append(" ORDER BY GT.TRANS_DATE, GV.GV_NO");
      
      return queryBuilder.toString() ;
     }
@@ -349,11 +386,11 @@ public class PrintGvCancelRpt extends GenericExcel {
          headerCell.setCellStyle(descellstyle);     
 
          headerCell = headerRow.createCell((short) k++);
-         headerCell.setCellValue(rs.getString("AMOUNT"));
-         headerCell.setCellStyle(descellstyle);
+         headerCell.setCellValue(decimalFormat.format(Double.parseDouble(rs.getString("AMOUNT"))));
+         headerCell.setCellStyle(cellstyle);
          
          headerCell = headerRow.createCell((short) k++);
-         headerCell.setCellValue(rs.getString("CANCELLATION_DATE"));
+         headerCell.setCellValue(reportGenTime.format(rs.getDate("CANCELLATION_DATE")));
          headerCell.setCellStyle(descellstyle);         
          
          headerCell = headerRow.createCell((short) k++);
@@ -459,7 +496,7 @@ public class PrintGvCancelRpt extends GenericExcel {
        sheet.addMergedRegion(region);
        headerRow = sheet.createRow((short) 0);
        headerCell = headerRow.createCell((short) 0);
-       headerCell.setCellValue(getDescription(coymstSQL.COY_NAME()));
+       headerCell.setCellValue(getTranslatedCaptionMsg(SYSCompanyName));
        headerCell.setCellStyle(CompanyTitleStyle);        
     
        region = new Region(2, (short) 0, 2, (short)4);
@@ -489,7 +526,8 @@ public class PrintGvCancelRpt extends GenericExcel {
        sheet.addMergedRegion(region);
        headerRow = sheet.createRow((short) 6);
        headerCell = headerRow.createCell((short) 0);
-       headerCell.setCellValue(getTranslatedCaptionMsg("Voucher Type") + ": " + (strGvType.equals("")? strAll : strGvType));
+       headerCell.setCellValue(getTranslatedCaptionMsg("Voucher Type") + ": " + 
+                               (strGvType.equals("")? strAll : (strGvType + " - " + strGvTypeDesc)));
        headerCell.setCellStyle(ReportCriteriaStyle);   
        
        region = new Region(7, (short) 0, 7, (short)2);
@@ -497,7 +535,8 @@ public class PrintGvCancelRpt extends GenericExcel {
        headerRow = sheet.createRow((short) 7);
        headerCell = headerRow.createCell((short) 0);
        headerCell.setCellValue(getTranslatedCaptionMsg("Voucher Denomination") + ": " +
-                                 (strGvDenomination.equals("") ? strAll : strGvDenomination));
+                                (strGvDenomination.equals("") ? strAll :
+                                 (strGvDenomination + " - " + strGvDenominationDesc)));
        headerCell.setCellStyle(ReportCriteriaStyle);   
        
        region = new Region(8, (short) 0, 8, (short)2);

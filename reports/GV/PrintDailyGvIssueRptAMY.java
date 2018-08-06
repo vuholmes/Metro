@@ -5,10 +5,9 @@ import java.io.*;
 import java.sql.*;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.ArrayList;
+
+import java.text.DecimalFormat;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.Vector;
 import java.text.SimpleDateFormat;
 import java.text.Format;
 import java.util.Calendar;
@@ -29,10 +28,6 @@ import qrcom.PROFIT.reports.*;
 
 import qrcom.util.CurrencyConverter;
 import qrcom.util.HParam;
-import qrcom.util.qrMisc;
-import qrcom.util.qrMath; 
-
-import qrcom.PROFIT.files.info.StrmstSQL;
 
 public class PrintDailyGvIssueRptAMY extends GenericExcel 
 {
@@ -45,11 +40,10 @@ public class PrintDailyGvIssueRptAMY extends GenericExcel
    
    private int currentRow = 0; 
    // variables to hold the user input values
-
-   private String REPORT_HDR = "VOUCHER DOWNLOAD";
    
    private static final String DATE_FORMAT_NOW = "yyyy-MM-dd HH:mm:ss";
    
+   private String SYSCompanyName = "";
    private String strUsrId           = null;
    private String strCoy = null;
    private String strCoySub = null;
@@ -66,11 +60,9 @@ public class PrintDailyGvIssueRptAMY extends GenericExcel
    private int maxPerSheet = 0;
    private int currentDataRow = 1;
    private boolean test_run = false;
-   private boolean first_column = true;
    
    private PreparedStatement prepareStmt = null;
    private ResultSet rs = null;
-   private CoymstSQL coymstSQL;
    private ProfitvvSQL profitvvSQL = null;
 
    private String SYSGVCatSell         = ""; 
@@ -96,12 +88,11 @@ public class PrintDailyGvIssueRptAMY extends GenericExcel
    
    private Region region                        = null;
    
-   private HParam newParam = null;
-   
    private Date date = new Date();
    
-   private SimpleDateFormat reportGenTime = new SimpleDateFormat("dd-MMM-yyyy"); 
-   private Format formatter = new SimpleDateFormat("hh:mm:ss a");
+   private DecimalFormat decimalFormat = new DecimalFormat("#0.00");
+   private SimpleDateFormat reportGenTime = new SimpleDateFormat("yyyy-MM-dd"); 
+//   private Format formatter = new SimpleDateFormat("hh:mm:ss a");
    private Format formatter1 = new SimpleDateFormat("kk:mm");
    private String printdate = reportGenTime.format(date).toUpperCase(); 
    private String printtime = formatter1.format(date);
@@ -121,7 +112,6 @@ public class PrintDailyGvIssueRptAMY extends GenericExcel
   
    private void initObjSQL() throws SQLException
    {
-      coymstSQL      = new CoymstSQL(conn);
       profitvvSQL = new ProfitvvSQL(conn);
    }   
    
@@ -143,7 +133,8 @@ public class PrintDailyGvIssueRptAMY extends GenericExcel
       String strSYSRoundPlace     = getProfitVV("SYSRoundPlace", strCoy);
       String strSYSRoundMode      = getProfitVV("SYSRoundMode", strCoy);
       String strSYSDecimalDisplay = getProfitVV("SYSDecimalDisplay", strCoy);
-
+      
+      SYSCompanyName       = getProfitVV("SYSCompanyName", strCoy);
       SYSGVCatSell         = getProfitVV("SYSGVCatSell", strCoy); 
       SYSGVCatPoint        = getProfitVV("SYSGVCatPoint", strCoy);
       SYSGVCatRebate       = getProfitVV("SYSGVCatRebate", strCoy);
@@ -153,9 +144,6 @@ public class PrintDailyGvIssueRptAMY extends GenericExcel
        
       currencyConverter = new CurrencyConverter(strSYSUserLanguage, strSYSUserCountry, Integer.parseInt(strSYSRoundPlace), Integer.parseInt(strSYSRoundMode), Integer.parseInt(strSYSDecimalDisplay));
       currencyConverter.setGrouping(false);
-      
-      coymstSQL.setCOY(strCoy); 
-      coymstSQL.getByKey();
       
       // create a new workbook
       workBook = new HSSFWorkbook();
@@ -380,9 +368,9 @@ public class PrintDailyGvIssueRptAMY extends GenericExcel
         headerCell = headerRow.createCell((short) k++);
         headerCell.setCellValue(rs.getString("TOT_GV"));
         headerCell.setCellStyle(descellstyle);
-        
+          
         headerCell = headerRow.createCell((short) k++);
-        headerCell.setCellValue(rs.getString("TOT_AMT"));
+        headerCell.setCellValue(decimalFormat.format(Double.parseDouble(rs.getString("TOT_AMT"))));
         headerCell.setCellStyle(cellstyle);         
         
         headerCell = headerRow.createCell((short) k++);
@@ -577,7 +565,7 @@ public class PrintDailyGvIssueRptAMY extends GenericExcel
       sheet.addMergedRegion(region);
       headerRow = sheet.createRow((short) 0);
       headerCell = headerRow.createCell((short) 0);
-      headerCell.setCellValue(getDescription(coymstSQL.COY_NAME()));
+      headerCell.setCellValue(getTranslatedCaptionMsg(SYSCompanyName));
       headerCell.setCellStyle(CompanyTitleStyle);        
    
       region = new Region(2, (short) 0, 2, (short)4);
