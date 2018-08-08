@@ -146,8 +146,8 @@
 
      private String strFOOTER_3 = "GV_RECEIPT_FOOTER";
 
-     private String strNAME_COLLECTOR = "Reference 1";
-     private String strNRIC_NO = "Reference 2";
+     private String strNAME_COLLECTOR = "Name of Collector";
+     private String strNRIC_NO = "NRIC No";
      private String strNAME_STAFF = "Name of Staff";
      private String strSTAFF_ID = "Staff ID";
      private String strSIGNATURE = "Signature";
@@ -1746,9 +1746,9 @@
              resultMap.get("DATE") != null && !((String) resultMap.get("DATE")).equals("") ?
              qrMisc.parseDate((String) resultMap.get("DATE"), "yyyy-MM-dd") : null;
          String strDate = dtDate != null ? fmt.format(dtDate) : "";
-//         if (resultMap.get("PURCHASER") != null && !((String) resultMap.get("PURCHASER")).equals("")) {
-//             strPurchaser = getDescription((String) resultMap.get("PURCHASER"));
-//         }
+         if (resultMap.get("PURCHASER") != null && !((String) resultMap.get("PURCHASER")).equals("")) {
+             strPurchaser = getDescription((String) resultMap.get("PURCHASER"));
+         }
          if (resultMap.get("CONTACT_NO") != null && !((String) resultMap.get("CONTACT_NO")).equals("")) {
              strContactNo = getDescription((String) resultMap.get("CONTACT_NO"));
          }
@@ -1772,7 +1772,7 @@
              strIssueType = getDescription((String) resultMap.get("ISSUE_TYPE"));
          }
          PdfPCell cell = null;
-         cell = new PdfPCell(new Phrase(adlangmstSQL.getTranslatedCaptionMsg(USER_LANGUAGE,"PURCHASER"), FontChinese));
+         cell = new PdfPCell(new Phrase(adlangmstSQL.getTranslatedCaptionMsg(USER_LANGUAGE,"PROGRAM TYPE"), FontChinese));
          cell.disableBorderSide(Rectangle.BOX);
          cell.setBorder(Rectangle.TOP);
          cell.setHorizontalAlignment(Element.ALIGN_LEFT);
@@ -3658,9 +3658,9 @@
          footertable_2.addCell(cell);
          /*----------------------------------------------------------------------------------------------*/
          String strArr[] = new String[5];
-         strArr[0] = adlangmstSQL.getTranslatedCaptionMsg(USER_LANGUAGE, strNAME_COLLECTOR);
+         strArr[0] = "";
          strArr[1] = "";
-         strArr[2] = adlangmstSQL.getTranslatedCaptionMsg(USER_LANGUAGE, strNRIC_NO);
+         strArr[2] = "";
          strArr[3] = "";
          strArr[4] = adlangmstSQL.getTranslatedCaptionMsg(USER_LANGUAGE,strSIGNATURE);
 

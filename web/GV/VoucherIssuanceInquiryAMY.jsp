@@ -90,16 +90,13 @@
 		{
 			strSerialNo = request.getParameter("txtSerialNo");
 		}
-		if(!strAction.equals(""))
+		if(request.getParameter("cboGvDeno")!=null && !request.getParameter("cboGvDeno").equals(""))
 		{
-			if(request.getParameter("cboGvDeno")!=null && !request.getParameter("cboGvDeno").equals(""))
-			{
-				strGvDeno = request.getParameter( "cboGvDeno" );
-			}
-			if(request.getParameter("txtGVNo")!=null && !request.getParameter("txtGVNo").equals(""))
-			{
-				strGVNo = request.getParameter( "txtGVNo" );
-			}
+			strGvDeno = request.getParameter( "cboGvDeno" );
+		}
+		if(request.getParameter("txtGVNo")!=null && !request.getParameter("txtGVNo").equals(""))
+		{
+			strGVNo = request.getParameter( "txtGVNo" );
 		}
 		if(request.getParameter("cboProgramType")!=null && !request.getParameter("cboProgramType").equals(""))
 		{

@@ -505,7 +505,7 @@ public class PrintDailyGvIssueRptAMY extends GenericExcel
       setRegionMethod();
       headerRow = sheet.createRow((short) headerRowStart);
       headerCell = headerRow.createCell((short) k);
-      headerCell.setCellValue(getTranslatedCaptionMsg("Issued/Cancalled By")); 
+      headerCell.setCellValue(getTranslatedCaptionMsg("Issued/Cancelled By")); 
       headerCell.setCellStyle(headerstyle); 
 
       k++;

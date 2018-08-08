@@ -348,7 +348,7 @@
 												<td colspan="2"><input type="text" name="txtContactNo" value="<%=strContactNo%>" readonly tabindex="-1" class="input-display"/></td>
 												<td width="5%"></td>
 												<td width="20%" class="caption"><%= jbWResGUI.getRes("Reference 1")%></td>
-												<td colspan="25%"><input type="text" name="txtCollector" value="<%=strCollector%>" readonly tabindex="-1" class="input-display"/></td>
+												<td width="25%"><input type="text" name="txtCollector" value="<%=strCollector%>" readonly tabindex="-1" class="input-display"/></td>
 												<td width="5%"></td>
 											</tr>
 											<tr>
