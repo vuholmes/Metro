@@ -165,7 +165,11 @@
                 }
                 
                 if(tot != 1) {
-                    alert('<%=jbWResPrompt.getRes("Please select one action only")%>');
+                    if(tot < 1) {
+                        alert('<%=jbWResPrompt.getRes("Please select at least one action")%>');
+                    } else {
+                        alert('<%=jbWResPrompt.getRes("Please select one action only")%>');
+                    }
                     disableButton('N');
                     return false;
                 }
@@ -178,26 +182,39 @@
                 disableButton('N'); 
                 var tot = 0;
                 var TOTALROWS = window.document.FORM.TOTALROWS.value;
-                
+                var str = [5];
                 for(i=1;i<=TOTALROWS;i++) {
-                    if(window.document.FORM.elements['chkAction_'+i].checked) {    
+                    if(window.document.FORM.elements['chkAction_'+i].checked) {
                         tot++;
+                        str[0] = window.document.FORM.elements["txtCoy_" + i].value;
+                        str[1] = window.document.FORM.elements["txtCoySub_" + i].value;
+                        str[2] = window.document.FORM.elements["txtVoucherType_" + i].value;
+                        str[3] = window.document.FORM.elements["txtReasonCode_" + i].value;
+                        str[4] = window.document.FORM.elements["txtProgramType_" + i].value;
                     }
                 }
                 
                 if(tot != 1) {
-                    alert('<%=jbWResPrompt.getRes("Please select one action only")%>');
+                    if(tot < 1) {
+                        alert('<%=jbWResPrompt.getRes("Please select at least one action")%>');
+                    } else {
+                        alert('<%=jbWResPrompt.getRes("Please select one action only")%>');
+                    }
                     disableButton('N');
                     return false;
-                }       
-            
-                var url = '<%=BaseURL%>/servlet/SvltVoucherProgramType?ACTION='+TYPE;
-                window.document.FORM.action = url;
-                var n = new Date().getTime();
-                window.document.FORM.target = 'viewPromptWindow'+n; 
-                window.open('','viewPromptWindow'+n,'height=600,width=800,left=0, top=0, status=no,toolbar=no,menubar=no,location=no,resizable=yes,scrollbars=yes');         
-                window.document.FORM.submit();
-                window.document.FORM.target = '_self'; 
+                }
+
+				var TargetClass = 'qrcom.PROFIT.files.dao.local.GV.VoucherProgramTypeDAO';
+				var TargetMethod = 'verifyAProgramType';
+				var CallbackMethod = 'onViewCalledBack';
+				var Params = '';
+				Params = Params + '&COY=' + str[0];
+				Params = Params + '&COY_SUB=' + str[1];
+                Params = Params + '&VOUCHER_TYPE=' + str[2];
+                Params = Params + '&REASON_CODE=' + str[3];
+                Params = Params + '&PROGRAM_TYPE=' + str[4];
+				var baseURL = '<%=BaseURL%>';
+				invokeTargetClass(baseURL, TargetClass, TargetMethod, CallbackMethod, Params);
             }
             else if (TYPE === 'Delete') {
                 var tot = 0;
@@ -229,6 +246,22 @@
                     return false;          
                 }
             
+            }
+        }
+
+        function onViewCalledBack(errorMsg) {
+            if(!errorMsg) {
+                var url = '<%=BaseURL%>/servlet/SvltVoucherProgramType?ACTION=View';
+                window.document.FORM.action = url;
+                var n = new Date().getTime();
+                window.document.FORM.target = 'viewPromptWindow'+n; 
+                window.open('','viewPromptWindow'+n,'height=600,width=800,left=0, top=0, status=no,toolbar=no,menubar=no,location=no,resizable=yes,scrollbars=yes');         
+                window.document.FORM.submit();
+                window.document.FORM.target = '_self';
+            } else {
+                var url = '<%=BaseURL%>/servlet/SvltVoucherProgramType?ACTION=View';
+                window.document.FORM.action = url;  
+                window.document.FORM.submit();
             }
         }
 
@@ -266,7 +299,7 @@
 <center>
 <form name="FORM" id="FORM" method="post" action="<%=BaseURL%>/servlet/SvltVoucherProgramType" >
     <fieldset class="fieldsettitle">
-        <legend><%=jbWResGUI.getRes("Maintain Voucher Program Type")%></legend>
+        <legend><%=jbWResGUI.getRes("Maintain Program Type")%> - <%=jbWResGUI.getRes("Search")%></legend>
             <table border="0" width="100%" cellpadding="5" cellspacing="0" class="table-border">
             <tr><td>
                 <table border="0" width="100%" cellpadding="0" cellspacing="1" class="table-border">

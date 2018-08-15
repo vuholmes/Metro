@@ -812,7 +812,7 @@
 														<tr>
 															<td width="20%" class="caption"><%=jbWResGUI.getRes("Reason Code")%></td>
 															<td colspan="2">
-																<select name="cboRsnCd" onblur="onchgRsnCd('cboRsnCd')" onchange="onChgVouchType();"> 
+																<select name="cboRsnCd" onchange="onChgVouchType();"> 
 																	<%=MTComboBox.Default(lang_code, strRsnCd, "RSN_CD", "RSN_DESC", "DEL_CD", "GVRSNMST", "WHERE COY='"+strCoy+"' AND COY_SUB='"+strCoySub+"' AND GV_TYPE='"+strGvType+"'")%>
 																</select>
 															</td>
@@ -825,7 +825,7 @@
 															<td width="20%" class="caption"><%=jbWResGUI.getRes("Program Type")%></td>
 															<td colspan="2">
 																<select name="cboProgramType" > 
-																	<%=MTComboBox.Default(lang_code, strProgramType, "PROG_CD", "PROG_DESC", "GVPROGTYPMST", "WHERE COY='"+strCoy+"' AND COY_SUB='"+strCoySub+"' AND GV_TYPE='"+strGvType+"' AND RSN_CD = '"+strRsnCd+"' ORDER BY PROG_CD" )%>
+																	<%=MTComboBox.Default(lang_code, strProgramType, "PROG_CD", "PROG_DESC", "DEL_CD", "GVPROGTYPMST", "WHERE COY='"+strCoy+"' AND COY_SUB='"+strCoySub+"' AND GV_TYPE='"+strGvType+"' AND RSN_CD = '"+strRsnCd+"' ORDER BY PROG_CD" )%>
 																</select>
 															</td>
 															<td width="5%"></td>

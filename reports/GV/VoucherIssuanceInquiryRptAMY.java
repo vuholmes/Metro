@@ -41,7 +41,8 @@
  import qrcom.PROFIT.files.info.AltDescUtil;
  import qrcom.PROFIT.files.info.GvdenomstInfoAMY;
  import qrcom.PROFIT.files.info.GvdenomstSQLAMY;
- import qrcom.PROFIT.files.info.GvtypemstInfoAMY;
+import qrcom.PROFIT.files.info.GvprogtypmstSQL;
+import qrcom.PROFIT.files.info.GvtypemstInfoAMY;
  import qrcom.PROFIT.files.info.GvtypemstSQLAMY;
  import qrcom.PROFIT.files.info.ProfitvvSQL;
  import qrcom.PROFIT.files.info.StrmstInfo;
@@ -65,6 +66,7 @@
      private GvdenomstSQLAMY gvdenomstSQL = null;
      private GvtypemstSQLAMY gvtypemstSQL = null;
      private StrmstSQL strmstSQL = null;
+     private GvprogtypmstSQL progtypmstSQL;
 
      private Font FontChineseSmall = null;
      private Font FontChinese_title = null;
@@ -182,6 +184,7 @@
          gvdenomstSQL = new GvdenomstSQLAMY(conn);
          gvtypemstSQL = new GvtypemstSQLAMY(conn);
          strmstSQL = new StrmstSQL(conn);
+         progtypmstSQL = new GvprogtypmstSQL();
      }
 
      private void jInit(HParam hParam) throws Exception {
@@ -1707,6 +1710,21 @@
          profitvvSQL.getByKey();
          return profitvvSQL.VNM_VDTVL();
      }
+     
+     private String getProgramTypeDescription(String progCd) throws Exception {
+         if (gvType == null || gvType.trim().length() == 0 || rsnCd == null || rsnCd.trim().length() == 0 ||
+             progCd == null || progCd.trim().length() == 0) {
+             return "";
+         }
+         progtypmstSQL.setCOY(COY);
+         progtypmstSQL.setCOY_SUB(COY_SUB);
+         progtypmstSQL.setGV_TYPE(gvType);
+         progtypmstSQL.setRSN_CD(rsnCd);
+         progtypmstSQL.setPROG_CD(progCd);
+         progtypmstSQL.getByKey();
+
+         return progtypmstSQL.PROG_DESC();
+     }
 
      private void printNewPage() throws Exception {
          document.newPage();
@@ -1739,6 +1757,7 @@
          tableSuperHdr.setWidthPercentage(100);
          tableSuperHdr.setHorizontalAlignment(Element.ALIGN_CENTER);
          String strPurchaser = "";
+         String strProgDesc = "";
          String strContactNo = "";
          String strTotalAmount = "";
          String strIssueType = "";
@@ -1747,7 +1766,9 @@
              qrMisc.parseDate((String) resultMap.get("DATE"), "yyyy-MM-dd") : null;
          String strDate = dtDate != null ? fmt.format(dtDate) : "";
          if (resultMap.get("PURCHASER") != null && !((String) resultMap.get("PURCHASER")).equals("")) {
-             strPurchaser = getDescription((String) resultMap.get("PURCHASER"));
+             strPurchaser = (String) resultMap.get("PURCHASER");
+             strProgDesc = getProgramTypeDescription(strPurchaser);
+             strPurchaser = getDescription(strPurchaser) + " - " + strProgDesc;
          }
          if (resultMap.get("CONTACT_NO") != null && !((String) resultMap.get("CONTACT_NO")).equals("")) {
              strContactNo = getDescription((String) resultMap.get("CONTACT_NO"));

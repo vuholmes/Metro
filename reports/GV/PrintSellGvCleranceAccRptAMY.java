@@ -281,7 +281,7 @@ public class PrintSellGvCleranceAccRptAMY extends GenericExcel
   private String getQuery() throws Exception
   {
     String query = "";
-    String strSYSVchrDisGL = getProfitVV("SYSVchrDisGL", strCoy);
+//    String strSYSVchrDisGL = getProfitVV("SYSVchrDisGL", strCoy);
     String SYSDwnVchrToPos = getProfitVV("SYSDwnVchrToPos", strCoy);
     
     if(strReportType.equals("M"))
@@ -313,7 +313,7 @@ public class PrintSellGvCleranceAccRptAMY extends GenericExcel
             "\nFROM " + 
             "\nGLINTF " + 
             "\nWHERE " +
-            "\nGL_TRANS_GRP IN " + (strSYSVchrDisGL.equals("N") ? "('S','C') " : "('C') ");
+            "\nGL_TRANS_GRP IN " + (SYSDwnVchrToPos.equals("Y") ? "('S','C') " : "('C') ");
             
         if(strStore.equals(""))
           query += "\nAND GL_STORE IN (SELECT STORE FROM ADOPRSTR WHERE USR_ID = '"+strUsrId+"') " ;

@@ -1,18 +1,25 @@
 package qrcom.PROFIT.files.dao.local.GV;
 
+import java.io.IOException;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
 
+import javax.servlet.ServletException;
+
 import qrcom.PROFIT.files.dao.IF.shared.QueryBasedPagingDAOHandller;
 import qrcom.PROFIT.files.info.GvprogtypmstInfo;
 import qrcom.PROFIT.files.info.GvprogtypmstSQL;
+import qrcom.PROFIT.files.info.GvrsnmstSQLAMY;
 import qrcom.PROFIT.files.info.logger.GvprogtypmstLogger;
 import qrcom.PROFIT.shared.Utility.ExecuteQuery;
+
 import qrcom.util.HParam;
 import qrcom.util.ejb.connection.DataSource;
 import qrcom.util.qrMisc;
@@ -34,14 +41,47 @@ public class VoucherProgramTypeDAO implements QueryBasedPagingDAOHandller {
         gvrsnmstSQL.setRSN_CD(_strGvReasonCode);
         gvrsnmstSQL.setPROG_CD(strGvProgramType);
         if (gvrsnmstSQL.getByKey() == 0) {
-            throw (new SQLException("USR_MSG=NE_SKU [ in GVRSNMST]"));
+            throw (new SQLException("USR_MSG=NE_REC"));
         }
-        
+
         Vector vct = gvrsnmstSQL.getVObject();
         GvprogtypmstInfo info = new GvprogtypmstInfo();
 
         info.setVObject(vct);
         return info;
+    }
+    
+    public String verifyAProgramType(HParam hParam) throws ServletException, IOException {
+        String strResult = "";
+        String strCOY = hParam.getString("COY");
+        String strCOY_SUB = hParam.getString("COY_SUB");
+        String strVoucher_Type = hParam.getString("VOUCHER_TYPE");
+        String strReasonCode = hParam.getString("REASON_CODE");
+        String strProgram_Type = hParam.getString("PROGRAM_TYPE");
+
+        try {
+            findByPrimaryKey(strCOY, strCOY_SUB, strVoucher_Type, strReasonCode, strProgram_Type);
+        } catch (Exception e) {
+            strResult = e.getMessage();
+        }
+        return strResult;
+    }
+
+    private boolean validateRsnWithGvType(String _strCoy, String _strCoySub, String _strGvType,
+                                          String _strGvReasonCode) {
+        GvrsnmstSQLAMY gvrsnmstSQL = new GvrsnmstSQLAMY();
+        gvrsnmstSQL.setCOY(_strCoy);
+        gvrsnmstSQL.setCOY_SUB(_strCoySub);
+        gvrsnmstSQL.setGV_TYPE(_strGvType);
+        gvrsnmstSQL.setRSN_CD(_strGvReasonCode);
+        try {
+            if (gvrsnmstSQL.getByKey() == 0) {
+                return false;
+            }
+        } catch (SQLException e) {
+            return false;
+        }
+        return true;
     }
 
     public Collection deleteVoucherProgramType(Collection coll_gvprogtypmst, String userId) throws Exception {
@@ -49,7 +89,7 @@ public class VoucherProgramTypeDAO implements QueryBasedPagingDAOHandller {
         conn.setAutoCommit(false);
         Collection errorSets = new Vector();
         GvprogtypmstInfo gvprogtypmstInfo;
-
+        String errorMsg;
         try {
             GvprogtypmstSQL newGvprogtypmstSQL;
             GvprogtypmstSQL oldGvprogtypmstSQL;
@@ -71,7 +111,11 @@ public class VoucherProgramTypeDAO implements QueryBasedPagingDAOHandller {
                 newGvprogtypmstSQL.setGV_TYPE(gvprogtypmstInfo.GV_TYPE());
                 newGvprogtypmstSQL.setRSN_CD(gvprogtypmstInfo.RSN_CD());
                 newGvprogtypmstSQL.setPROG_CD(gvprogtypmstInfo.PROG_CD());
-                if (newGvprogtypmstSQL.getByKeyForUpdate() == 0) {
+
+                if (!validateRsnWithGvType(gvprogtypmstInfo.COY(), gvprogtypmstInfo.COY_SUB(),
+                                           gvprogtypmstInfo.GV_TYPE(), gvprogtypmstInfo.RSN_CD())) {
+                    errorSets.add("USR_MSG=Reason Code not belongs to selected Voucher Type");
+                } else if (newGvprogtypmstSQL.getByKeyForUpdate() == 0) {
                     errorSets.add("USR_MSG=NE_REC");
                 } else {
                     newGvprogtypmstSQL.setDEL_CD("Y");
@@ -86,35 +130,47 @@ public class VoucherProgramTypeDAO implements QueryBasedPagingDAOHandller {
             conn.commit();
         } catch (Exception e) {
             conn.rollback();
-            errorSets.add(e.getMessage());
+            if (e.getMessage().indexOf("ORA-00054") != -1) {
+                errorMsg = "USR_MSG=RESOURCE_BUSY";
+            } else {
+                errorMsg = e.getMessage();
+            }
+            errorSets.add(errorMsg);
         } finally {
             closeConnection();
         }
 
         return errorSets;
     }
-    
+
     public Collection updateVoucherProgramType(Vector vctGvprogtypmst) throws Exception {
         conn = DataSource.getLocalConnection();
         conn.setAutoCommit(false);
         Collection errorSets = new Vector();
+        String errorMsg;
         try {
             GvprogtypmstSQL newGvprogtypmstSQL = new GvprogtypmstSQL(conn);
             GvprogtypmstSQL currGvprogtypmstSQL = new GvprogtypmstSQL(conn);
             GvprogtypmstSQL tempGvprogtypmstSQL = new GvprogtypmstSQL(conn);
             GvprogtypmstLogger gvprogtypmstLogger = new GvprogtypmstLogger(conn);
-            
+
             tempGvprogtypmstSQL.setVObject(vctGvprogtypmst);
-            
+
             currGvprogtypmstSQL.setCOY(tempGvprogtypmstSQL.COY());
             currGvprogtypmstSQL.setCOY_SUB(tempGvprogtypmstSQL.COY_SUB());
-            currGvprogtypmstSQL.setGV_TYPE(tempGvprogtypmstSQL.GV_TYPE());    
+            currGvprogtypmstSQL.setGV_TYPE(tempGvprogtypmstSQL.GV_TYPE());
             currGvprogtypmstSQL.setRSN_CD(tempGvprogtypmstSQL.RSN_CD());
             currGvprogtypmstSQL.setPROG_CD(tempGvprogtypmstSQL.PROG_CD());
-            
-            if(currGvprogtypmstSQL.getByKeyForUpdate() == 0) {
+
+            if (!validateRsnWithGvType(tempGvprogtypmstSQL.COY(), tempGvprogtypmstSQL.COY_SUB(),
+                                       tempGvprogtypmstSQL.GV_TYPE(), tempGvprogtypmstSQL.RSN_CD())) {
+                errorSets.add("USR_MSG=Reason Code not belongs to selected Voucher Type");
+            } else if (currGvprogtypmstSQL.getByKeyForUpdate() == 0) {
                 errorSets.add("USR_MSG=NE_REC");
             } else {
+                if (currGvprogtypmstSQL.LAST_VERSION() != tempGvprogtypmstSQL.LAST_VERSION()) {
+                    throw (new SQLException("USR_MSG=NUPD_RECLOCK"));
+                }
                 newGvprogtypmstSQL.setVObject((Vector) currGvprogtypmstSQL.getVObject().clone());
                 newGvprogtypmstSQL.setPROG_DESC(tempGvprogtypmstSQL.PROG_DESC());
                 newGvprogtypmstSQL.setDEL_CD(tempGvprogtypmstSQL.DEL_CD());
@@ -122,15 +178,20 @@ public class VoucherProgramTypeDAO implements QueryBasedPagingDAOHandller {
                 newGvprogtypmstSQL.setLAST_OPR_FUNCT("EDIT_GV_PROGTYPE");
                 newGvprogtypmstSQL.setLAST_VERSION(System.currentTimeMillis());
                 newGvprogtypmstSQL.update();
-                
-                gvprogtypmstLogger.logEditRecord(currGvprogtypmstSQL,newGvprogtypmstSQL);
+
+                gvprogtypmstLogger.logEditRecord(currGvprogtypmstSQL, newGvprogtypmstSQL);
                 conn.commit();
             }
         } catch (Exception e) {
             conn.rollback();
-            errorSets.add(e.getMessage());
+            if (e.getMessage().indexOf("ORA-00054") != -1) {
+                errorMsg = "USR_MSG=RESOURCE_BUSY";
+            } else {
+                errorMsg = e.getMessage();
+            }
+            errorSets.add(errorMsg);
         } finally {
-           closeConnection(); 
+            closeConnection();
         }
         return errorSets;
     }
@@ -144,14 +205,17 @@ public class VoucherProgramTypeDAO implements QueryBasedPagingDAOHandller {
             GvprogtypmstLogger gvprogtypmstLogger = new GvprogtypmstLogger(conn);
 
             newGvprogtypmstSQL.setVObject(vctGvprogtypmst);
-            if (newGvprogtypmstSQL.checkKeyExist() > 0) {
+            if (!validateRsnWithGvType(newGvprogtypmstSQL.COY(), newGvprogtypmstSQL.COY_SUB(),
+                                       newGvprogtypmstSQL.GV_TYPE(), newGvprogtypmstSQL.RSN_CD())) {
+                errorSets.add("USR_MSG=Reason Code not belongs to selected Voucher Type");
+            } else if (newGvprogtypmstSQL.checkKeyExist() > 0) {
                 errorSets.add("USR_MSG=AE_REC");
             } else {
                 newGvprogtypmstSQL.setLAST_OPR_DATE(qrMisc.getSqlSysDate());
                 newGvprogtypmstSQL.setLAST_OPR_FUNCT("ADD_GV_PROGTYPE");
                 newGvprogtypmstSQL.setLAST_VERSION(System.currentTimeMillis());
                 newGvprogtypmstSQL.insert();
-                
+
                 gvprogtypmstLogger.logInsertNewRecord(newGvprogtypmstSQL);
                 conn.commit();
             }
@@ -159,7 +223,7 @@ public class VoucherProgramTypeDAO implements QueryBasedPagingDAOHandller {
             conn.rollback();
             errorSets.add(e.getMessage());
         } finally {
-           closeConnection(); 
+            closeConnection();
         }
         return errorSets;
     }

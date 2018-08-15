@@ -210,10 +210,14 @@ public class VoucherIssuanceInquiryDAOAMY implements QueryBasedPagingDAOHandller
                 String gvType = resultSet.getString("GV_TYPE")!=null && resultSet.getString("GV_TYPE").length()>0 ? resultSet.getString("GV_TYPE") : "";
                 String rsnCd  = resultSet.getString("RSN_CD")!=null && resultSet.getString("RSN_CD").length()>0 ? resultSet.getString("RSN_CD") : "";
                 String transOpr = resultSet.getString("TRANS_OPR")!=null && resultSet.getString("TRANS_OPR").length()>0 ? resultSet.getString("TRANS_OPR") : "";
+                String progCd = resultSet.getString("PCH_NAME")!= null ? resultSet.getString("PCH_NAME") : "";
                 
                 String rsnCdDesc = getReasonCodeDescription(coy, coySub, gvType, rsnCd);
                 String rsnCdFull = rsnCd + " - " + rsnCdDesc;
                 
+                String progDesc = getProgramTypeDescription(coy, coySub, gvType, rsnCd, progCd);
+                String progFull = progCd + " - " + progDesc;
+                    
                 String transOprName = getTransOprName(transOpr);
                 String transOprFull = transOpr + " - " + transOprName;
             
@@ -222,7 +226,7 @@ public class VoucherIssuanceInquiryDAOAMY implements QueryBasedPagingDAOHandller
                 returnMap.put("STORE", resultSet.getString("STORE"));
                 returnMap.put("TRANS_TYPE", resultSet.getString("TRANS_TYPE"));
                 returnMap.put("SERIAL_NUM", resultSet.getString("SERIAL_NUM"));
-                returnMap.put("PCH_NAME", resultSet.getString("PCH_NAME"));
+                returnMap.put("PCH_NAME", progFull);
                 returnMap.put("TRANS_DATE", resultSet.getString("TRANS_DATE"));
                 returnMap.put("PCH_CONTACT_NO", resultSet.getString("PCH_CONTACT_NO"));
                 returnMap.put("COLL_NRIC", resultSet.getString("COLL_NRIC"));
@@ -427,6 +431,24 @@ public class VoucherIssuanceInquiryDAOAMY implements QueryBasedPagingDAOHandller
         
         return gvrsnmstSQL.RSN_DESC();
      }
+     
+    private String getProgramTypeDescription(String coy, String coySub, String gvType, String rsnCd,
+                                             String progCd) throws Exception {
+        if (gvType == null || gvType.trim().length() == 0 || rsnCd == null || rsnCd.trim().length() == 0 ||
+            progCd == null || progCd.trim().length() == 0) {
+            return "";
+        }
+
+        GvprogtypmstSQL progtypmstSQL = new GvprogtypmstSQL();
+        progtypmstSQL.setCOY(coy);
+        progtypmstSQL.setCOY_SUB(coySub);
+        progtypmstSQL.setGV_TYPE(gvType);
+        progtypmstSQL.setRSN_CD(rsnCd);
+        progtypmstSQL.setPROG_CD(progCd);
+        progtypmstSQL.getByKey();
+
+        return progtypmstSQL.PROG_DESC();
+    }
      
      private String getTransOprName(String userId) throws Exception
      {

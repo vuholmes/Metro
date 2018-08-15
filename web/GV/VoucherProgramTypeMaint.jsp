@@ -185,10 +185,10 @@
 <% } %>
 <center>
 <form name="FORM" id="FORM" method="post" action="<%=BaseURL%>/servlet/SvltVoucherProgramType" >
-<fieldset class="fieldsettitle"><legend><%=jbWResGUI.getRes("Maintain Voucher Program Type")%> -  <%=jbMaintType%></legend>
+<fieldset class="fieldsettitle"><legend><%=jbWResGUI.getRes("Maintain Program Type")%> - <%=jbMaintType%></legend>
     <table width="100%" cellpadding="5" cellspacing="0">
 	    <table BORDER="0" WIDTH="100%" CELLSPACING="1" CELLPADDING="3">	
-             <tr><th colspan="4"><%=jbWResGUI.getRes("Voucher Program Type Information")%></th></tr>
+             <tr><th colspan="4"><%=jbWResGUI.getRes("Program Type Details")%></th></tr>
             <tr>
                 <td width="35%" class="caption"> <%=jbWResGUI.getRes("Company")%> </td>              
                 <td width="25%">
@@ -314,11 +314,11 @@
     </table>
 </fieldset>
       
-      <input type="hidden" name="USR_ID" value="<%=strUSR_ID%>">
-      <input name="SEARCH_ACTION" id="SEARCH_ACTION" type="hidden" >
-      <input name="RETURN_VALUE"  id="RETURN_VALUE"  type="hidden">
-      <input name="ACTION"        id="ACTION"        type="hidden" >
-
+    <input type="hidden" name="USR_ID" value="<%=strUSR_ID%>">
+    <input name="SEARCH_ACTION" id="SEARCH_ACTION" type="hidden" >
+    <input name="RETURN_VALUE"  id="RETURN_VALUE"  type="hidden">
+    <input name="ACTION"        id="ACTION"        type="hidden" >
+    <INPUT name=LAST_VERSION id=LAST_VERSION value="<%=gvprogtypmstInfo.LAST_VERSION()%>" type=hidden>
 </form>
 <form id=FORM_SUBMIT method="post" action="<%=BaseURL%>/profit/GV/VoucherProgramTypeMaint.jsp" name=FORM_SUBMIT>
 </form>

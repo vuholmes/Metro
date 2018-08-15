@@ -160,8 +160,7 @@ public class SvltVoucherProgramTypeTx {
                         coll_gvprogtypmstInfo.add(gvprogtypmstInfo);
                     }
                 } else {
-                    LockermstInfo _info = st.getLockermstInfo();
-                    String strErr = "USR_MSG=REC_ALREADY_LOCKED[ " + _info.LAST_OPR() + "]";
+                    String strErr = "USR_MSG=RESOURCE_BUSY";
                     errorSets.add(strErr);
                 }
             }
@@ -227,8 +226,7 @@ public class SvltVoucherProgramTypeTx {
                 jbSession.setAttribute("jbMaintType", "Edit");
                 gotoPage("/profit/GV/VoucherProgramTypeMaint.jsp", request, response);
             } else {
-                LockermstInfo _info = st.getLockermstInfo();
-                String strErr = "USR_MSG=REC_ALREADY_LOCKED[ " + _info.LAST_OPR() + "]";
+                String strErr = "USR_MSG=RESOURCE_BUSY";
                 errorSets.add(strErr);
                 request.getSession().setAttribute("errorSets", errorSets);
                 gotoPage("/profit/GV/VoucherProgramTypeSearch.jsp" + paramter, request, response);
@@ -319,6 +317,8 @@ public class SvltVoucherProgramTypeTx {
     }
 
     private void loadHTML_Data(HttpServletRequest request) {
+        long longTemp = 0;
+        
         AduserInfo aduserInfo = (AduserInfo) request.getSession().getAttribute("aduserInfo");
         gvprogtypmstInfo = new GvprogtypmstInfo();
             
@@ -345,6 +345,13 @@ public class SvltVoucherProgramTypeTx {
             gvprogtypmstInfo.setDEL_CD("N");
         }
         gvprogtypmstInfo.setLAST_OPR(aduserInfo.USR_ID());
+        
+        try {
+            temp = request.getParameter("LAST_VERSION");
+            longTemp = Long.parseLong(temp);
+        } catch(Exception e) {}
+        
+        gvprogtypmstInfo.setLAST_VERSION(longTemp);
     }
 
     private void gotoPage(String address, HttpServletRequest request,
