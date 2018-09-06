@@ -463,7 +463,7 @@ public class PrintGvCancelRpt extends GenericExcel {
        setRegionMethod();
        headerRow = sheet.createRow((short) headerRowStart);
        headerCell = headerRow.createCell((short) k);
-       headerCell.setCellValue(getTranslatedCaptionMsg("Amount")); 
+       headerCell.setCellValue(getTranslatedCaptionMsg("Amount (RM)")); 
        headerCell.setCellStyle(headerstyle);
        
        k++;
@@ -503,7 +503,7 @@ public class PrintGvCancelRpt extends GenericExcel {
        sheet.addMergedRegion(region);
        headerRow = sheet.createRow((short) 2);
        headerCell = headerRow.createCell((short) 0);
-       headerCell.setCellValue(getTranslatedReportMsg("Voucher Cancellation Report"));
+       headerCell.setCellValue(getTranslatedReportMsg("Voucher Issuance Cancellation Report"));
        headerCell.setCellStyle(ReportTitleStyle);
 
        region = new Region(4, (short) 0, 4, (short)3);
